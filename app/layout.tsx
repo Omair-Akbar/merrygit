@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
-  title: "SecureChat - End-to-End Encrypted Messaging",
+  title: "MerryGit - End-to-End Encrypted Messaging",
   description: "Private, secure, end-to-end encrypted chat application",
   icons: {
     icon: "/favicon.ico",

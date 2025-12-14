@@ -24,7 +24,7 @@ export function Logo({ size = 40, className = "" }: LogoProps) {
   return (
     <Image
       src={resolvedTheme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
-      alt="SecureChat Logo"
+      alt="MerryGit Logo"
       width={size}
       height={size}
       className={className}

@@ -91,7 +91,7 @@ export default function HomePage() {
                 </motion.h1>
 
                 <motion.p variants={itemVariants} className="text-lg text-muted-foreground max-w-lg">
-                  SecureChat uses military-grade encryption to keep your messages safe. No one can read them except you
+                  MerryGit uses military-grade encryption to keep your messages safe. No one can read them except you
                   and your recipient.
                 </motion.p>
 
@@ -193,7 +193,7 @@ export default function HomePage() {
                 >
                   <motion.div
                     initial={{ scale: 1 }}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    // whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ type: "spring", stiffness: 400 }}
                   >
                     <feature.icon className="h-10 w-10 mb-4 transition-colors group-hover:text-foreground" />
@@ -228,7 +228,7 @@ export default function HomePage() {
                   title: "Create Account",
                   desc: "Sign up with just your email. No phone number required.",
                 },
-                { step: "02", title: "Find Friends", desc: "Search and connect with other SecureChat users." },
+                { step: "02", title: "Find Friends", desc: "Search and connect with other MerryGit users." },
                 { step: "03", title: "Chat Securely", desc: "Your messages are encrypted end-to-end automatically." },
               ].map((item, index) => (
                 <motion.div
@@ -258,7 +258,7 @@ export default function HomePage() {
 
         {/* CTA Section */}
         <section className="relative py-20 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/50 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent via-secondary/50 to-transparent" />
 
           <div className="container relative z-10 mx-auto px-4">
             <motion.div
@@ -276,7 +276,7 @@ export default function HomePage() {
                 Ready to chat securely?
               </motion.h2>
               <p className="text-muted-foreground">
-                Join thousands of users who trust SecureChat for their private conversations.
+                Join thousands of users who trust MerryGit for their private conversations.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button size="lg" variant="secondary" asChild>

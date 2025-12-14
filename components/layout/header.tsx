@@ -29,7 +29,7 @@ export function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <Logo size={36} />
-          <span className="text-lg font-semibold">SecureChat</span>
+          <span className="text-lg font-semibold">MerryGit</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">

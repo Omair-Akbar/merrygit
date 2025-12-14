@@ -77,7 +77,7 @@ export default function SignupPage() {
   const passwordsMatch = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword
 
   return (
-    <AuthLayout title="Create an account" subtitle="Join SecureChat and start messaging securely">
+    <AuthLayout title="Create an account" subtitle="Join MerryGit and start messaging securely">
       <form onSubmit={handleSubmit} className="space-y-4">
         <motion.div
           initial={{ opacity: 0, x: -10 }}

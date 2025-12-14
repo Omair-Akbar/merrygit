@@ -20,7 +20,7 @@ export default function PrivacyPage() {
             <section className="space-y-4">
               <h2 className="text-xl font-semibold">1. Introduction</h2>
               <p className="text-muted-foreground leading-relaxed">
-                SecureChat (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy.
+                MerryGit (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy.
                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use
                 our end-to-end encrypted messaging service.
               </p>
@@ -29,9 +29,9 @@ export default function PrivacyPage() {
             <section className="space-y-4">
               <h2 className="text-xl font-semibold">2. End-to-End Encryption</h2>
               <p className="text-muted-foreground leading-relaxed">
-                All messages sent through SecureChat are protected by end-to-end encryption. This means that only you
+                All messages sent through MerryGit are protected by end-to-end encryption. This means that only you
                 and the person you&apos;re communicating with can read what is sent, and nobody in between, not even
-                SecureChat.
+                MerryGit.
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-2">
                 <li>Your messages are encrypted on your device before being sent</li>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
               <p className="text-muted-foreground leading-relaxed">
                 If you have any questions about this Privacy Policy, please contact us at:
               </p>
-              <p className="text-foreground">privacy@securechat.app</p>
+              <p className="text-foreground">privacy@MerryGit.app</p>
             </section>
           </motion.div>
         </div>

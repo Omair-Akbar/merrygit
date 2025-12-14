@@ -19,7 +19,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
       <header className="absolute top-0 left-0 right-0 z-10 p-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
           <Logo size={32} />
-          <span className="font-semibold">SecureChat</span>
+          <span className="font-semibold">MerryGit</span>
         </Link>
         <ThemeToggle />
       </header>

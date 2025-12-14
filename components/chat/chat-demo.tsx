@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ImageIcon, Lock, Send, Smile } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
@@ -16,12 +16,42 @@ interface DemoMessage {
 }
 
 const demoMessages: DemoMessage[] = [
-  { id: "1", content: "Hey! Have you heard about SecureChat?", sender: "other", timestamp: "10:30 AM" },
-  { id: "2", content: "Yes! It uses end-to-end encryption, right?", sender: "user", timestamp: "10:31 AM" },
-  { id: "3", content: "Exactly! Only you and I can read these messages.", sender: "other", timestamp: "10:32 AM" },
-  { id: "4", content: "That sounds perfect for private conversations.", sender: "user", timestamp: "10:33 AM" },
-  { id: "5", content: "And the locked message feature is amazing!", sender: "other", timestamp: "10:34 AM" },
-  // { id: "6", content: "Totally! It gives an extra layer of security.", sender: "user", timestamp: "10:35 AM" },
+  {
+    id: "1",
+    content: "The package has been secured. Did you retrieve the microfilm?",
+    sender: "other",
+    timestamp: "10:30 AM"
+  },
+  {
+    id: "2",
+    content: "Affirmative. It's concealed in the dead drop at coordinates 47°36'N 122°20'W.",
+    sender: "user",
+    timestamp: "10:31 AM"
+  },
+  {
+    id: "3",
+    content: "Good. The asset will retrieve at 2300 hours. Operation Nightshade is compromised.",
+    sender: "other",
+    timestamp: "10:32 AM"
+  },
+  {
+    id: "4",
+    content: "Understood. I've activated Protocol Phoenix. My cover remains intact.",
+    sender: "user",
+    timestamp: "10:33 AM"
+  },
+  {
+    id: "5",
+    content: "Watch for double agent codename 'Raven'. Extraction scheduled for dawn.",
+    sender: "other",
+    timestamp: "10:34 AM"
+  },
+  { 
+    id: "6", 
+    content: "The encryption on this channel held. Headquarters confirms no intercepts.", 
+    sender: "user", 
+    timestamp: "10:35 AM",
+  },
 ]
 
 export function ChatDemo() {
@@ -42,15 +72,19 @@ export function ChatDemo() {
         {/* Chat header */}
         <div className="px-4 py-3 border-b border-border flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-secondary text-secondary-foreground">JD</AvatarFallback>
+            <AvatarImage src="https://avatars.githubusercontent.com/u/159688251?v=4" alt="@MerryGit" />
+            <AvatarFallback>MG</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <p className="font-medium text-sm">John Doe</p>
-            <p className="text-xs text-muted-foreground">Online</p>
+            <p className="font-medium text-sm">Musa</p>
+            <div className="flex items-center w-max justify-center pt-1 gap-2">
+              {/* <p className="text-xs text-green-600 font-semibold ">Online</p> */}
+              <p className="text-xs text-blue-600 font-semibold">Active in chat</p>
+            </div>
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Lock className="h-3 w-3" />
-            <span>Encrypted</span>
+            <Lock className="h-4 w-4" />
+            {/* <span>Encrypted</span> */}
           </div>
         </div>
 
@@ -108,7 +142,7 @@ export function ChatDemo() {
           {/* add image icon and emoji icon */}
           <div className="flex items-center justify-center gap-4">
             <Button variant="ghost" className="p-2 rounded-full" disabled>
-            <Send className="h-4 w-4" />
+              <Send className="h-4 w-4" />
             </Button>
           </div>
         </div>

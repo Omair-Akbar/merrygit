@@ -209,7 +209,7 @@ export default function ChatPage() {
             <Menu className="h-5 w-5" />
           </Button>
           <Logo size={28} />
-          <span className="font-semibold hidden sm:inline">SecureChat</span>
+          <span className="font-semibold hidden sm:inline">MerryGit</span>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -293,7 +293,7 @@ export default function ChatPage() {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-4">
                 <Logo size={64} className="mx-auto opacity-50" />
                 <div>
-                  <h2 className="text-xl font-semibold">Welcome to SecureChat</h2>
+                  <h2 className="text-xl font-semibold">Welcome to MerryGit</h2>
                   <p className="text-muted-foreground">Select a conversation to start messaging</p>
                 </div>
               </motion.div>
