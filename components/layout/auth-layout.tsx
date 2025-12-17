@@ -49,7 +49,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               {subtitle}
             </motion.p>
           </div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="border rounded-xl bg-background/50 p-6 shadow-lg">
             {children}
           </motion.div>
         </motion.div>
