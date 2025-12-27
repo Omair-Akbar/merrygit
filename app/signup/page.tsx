@@ -183,7 +183,7 @@ export default function SignupPage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-          <Button type="submit" variant="secondary" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" variant="default" className="w-full dark:text-black dark:bg-white" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
