@@ -30,13 +30,15 @@ import { Switch } from "@/components/ui/switch"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
-import { logout, updateAvatar, removeAvatar } from "@/lib/store/slices/auth-slice"
+import { logoutUser } from "@/lib/store/slices/auth-slice"
+import { uploadAvatar, deleteAvatar } from "@/lib/store/slices/profile-slice"
 import {
   setLockDisplayMode,
   setCustomLockText,
   toggleNotifications,
   toggleSound,
 } from "@/lib/store/slices/settings-slice"
+import { toast } from "react-hot-toast"
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -44,43 +46,66 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const { lockDisplayMode, customLockText, notifications, soundEnabled } = useAppSelector((state) => state.settings)
   const { user } = useAppSelector((state) => state.auth)
+  const { isLoading } = useAppSelector((state) => state.profile)
 
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Demo user data
   const currentUser = user || {
-    name: "Demo User",
-    username: "demouser",
+    name: "User",
+    username: "user",
     avatar: undefined,
   }
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setPreviewAvatar(url)
+    if (!file) return
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file")
+      return
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB")
+      return
+    }
+
+    const url = URL.createObjectURL(file)
+    setPreviewAvatar(url)
   }
 
-  const handleUploadAvatar = () => {
+  const handleUploadAvatar = async () => {
     if (previewAvatar) {
-      dispatch(updateAvatar(previewAvatar))
+      const file = fileInputRef.current?.files?.[0]
+      if (file) {
+        await dispatch(uploadAvatar(file))
+        setPreviewAvatar(null)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+      }
+    }
+  }
+
+  const handleRemoveAvatar = async () => {
+    if (window.confirm("Are you sure you want to delete your avatar?")) {
+      await dispatch(deleteAvatar())
       setPreviewAvatar(null)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
     }
   }
 
-  const handleRemoveAvatar = () => {
-    dispatch(removeAvatar())
-    setPreviewAvatar(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap()
+      toast.success("Logged out successfully")
+      router.push("/")
+    } catch (error) {
+      toast.error("Failed to logout")
     }
-  }
-
-  const handleLogout = () => {
-    dispatch(logout())
-    router.push("/login")
   }
 
   const displayAvatar = previewAvatar || currentUser.avatar
@@ -119,6 +144,7 @@ export default function SettingsPage() {
                     variant="secondary"
                     className="absolute bottom-0 right-0 h-7 w-7 rounded-full"
                     onClick={() => fileInputRef.current?.click()}
+                    disabled={isLoading}
                   >
                     <Camera className="h-3.5 w-3.5" />
                   </Button>
@@ -129,16 +155,35 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="hidden"
+                disabled={isLoading}
+              />
 
               <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="gap-2"
+                  disabled={isLoading}
+                >
                   <Camera className="h-4 w-4" />
                   Set Picture
                 </Button>
 
                 {previewAvatar && (
-                  <Button variant="secondary" size="sm" onClick={handleUploadAvatar} className="gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleUploadAvatar}
+                    className="gap-2"
+                    disabled={isLoading}
+                  >
                     <Upload className="h-4 w-4" />
                     Upload
                   </Button>
@@ -150,6 +195,7 @@ export default function SettingsPage() {
                     size="sm"
                     onClick={handleRemoveAvatar}
                     className="gap-2 text-destructive hover:text-destructive"
+                    disabled={isLoading}
                   >
                     <Trash2 className="h-4 w-4" />
                     Remove

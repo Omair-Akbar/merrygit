@@ -56,7 +56,7 @@ export default function UpdatePasswordPage() {
 
   return (
     <AuthLayout title="Update your password" subtitle="Create a new secure password for your account">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}

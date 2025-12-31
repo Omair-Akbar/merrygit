@@ -67,7 +67,7 @@ export default function HomePage() {
           <div className="container relative z-10 mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-                <motion.div variants={itemVariants}>
+                {/* <motion.div variants={itemVariants}>
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -81,7 +81,7 @@ export default function HomePage() {
                     />
                     End-to-end encrypted messaging
                   </motion.div>
-                </motion.div>
+                </motion.div> */}
 
                 <motion.h1
                   variants={itemVariants}

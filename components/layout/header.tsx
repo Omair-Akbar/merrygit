@@ -1,26 +1,28 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Menu, X, Star, Github } from "lucide-react"
+import { Menu, X, Star, Github, LogOut } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Logo } from "@/components/ui/logo"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
+import { logoutUser } from "@/lib/store/slices/auth-slice"
+import { toast } from "react-hot-toast"
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/privacy", label: "Privacy" },
 ]
 
-// GitHub repository configuration
 const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/Omair-Akbar/frontend-chatapp"
-const GITHUB_API_URL = process.env.NEXT_PUBLIC_GITHUB_API_URL || "https://api.github.com/repos/Omair-Akbar/frontend-chatapp"
+const GITHUB_API_URL =
+  process.env.NEXT_PUBLIC_GITHUB_API_URL || "https://api.github.com/repos/Omair-Akbar/frontend-chatapp"
 
-// Function to format star count
 function formatStarCount(count: number): string {
   if (count >= 1000) {
     return `${(count / 1000).toFixed(1)}k`
@@ -28,7 +30,6 @@ function formatStarCount(count: number): string {
   return count.toString()
 }
 
-// Component for GitHub star display
 function GitHubStars() {
   const [starCount, setStarCount] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -36,7 +37,6 @@ function GitHubStars() {
   useEffect(() => {
     const fetchStars = async () => {
       try {
-        // Using a CORS proxy to avoid CORS issues in development
         const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(GITHUB_API_URL)}`)
         const data = await response.json()
 
@@ -54,7 +54,6 @@ function GitHubStars() {
 
     fetchStars()
 
-    // Optional: Refetch every 5 minutes to keep count updated
     const interval = setInterval(fetchStars, 5 * 60 * 1000)
     return () => clearInterval(interval)
   }, [])
@@ -89,7 +88,20 @@ function GitHubStars() {
 
 export function Header() {
   const pathname = usePathname()
+  const router = useRouter()
+  const dispatch = useAppDispatch()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap()
+      toast.success("Logged out successfully")
+      router.push("/")
+    } catch (error) {
+      toast.error("Failed to logout")
+    }
+  }
 
   return (
     <motion.header
@@ -117,19 +129,32 @@ export function Header() {
             </Link>
           ))}
 
-          {/* GitHub Repository Link */}
           <GitHubStars />
         </nav>
 
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href="/signup">Get Started</Link>
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/profile">Profile</Link>
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 bg-transparent">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button variant="secondary" asChild>
+                  <Link href="/signup">Get Started</Link>
+                </Button>
+              </>
+            )}
           </div>
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -138,11 +163,7 @@ export function Header() {
       </div>
 
       {/* Mobile menu */}
-      <motion.div
-        initial={false}
-        animate={{ height: isMenuOpen ? "auto" : 0 }}
-        className="overflow-hidden md:hidden"
-      >
+      <motion.div initial={false} animate={{ height: isMenuOpen ? "auto" : 0 }} className="overflow-hidden md:hidden">
         <div className="container mx-auto px-4 pb-4 space-y-3">
           {navLinks.map((link) => (
             <Link
@@ -158,7 +179,6 @@ export function Header() {
             </Link>
           ))}
 
-          {/* Mobile GitHub Link */}
           <div className="pt-2 border-t border-border/50">
             <a
               href={GITHUB_REPO_URL}
@@ -175,13 +195,40 @@ export function Header() {
             </a>
           </div>
 
-          <div className="flex gap-2 pt-3">
-            <Button variant="outline" className="flex-1 bg-transparent" asChild>
-              <Link href="/login" onClick={() => setIsMenuOpen(false)}>Login</Link>
-            </Button>
-            <Button variant="secondary" className="flex-1" asChild>
-              <Link href="/signup" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
-            </Button>
+          <div className="flex flex-col gap-2 pt-3">
+            {isAuthenticated ? (
+              <>
+                <Button variant="outline" className="w-full bg-transparent" asChild>
+                  <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                    Profile
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 bg-transparent"
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    handleLogout()
+                  }}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" className="w-full bg-transparent" asChild>
+                  <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                    Login
+                  </Link>
+                </Button>
+                <Button variant="secondary" className="w-full" asChild>
+                  <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                    Get Started
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </motion.div>

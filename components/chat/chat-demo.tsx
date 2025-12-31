@@ -46,12 +46,12 @@ const demoMessages: DemoMessage[] = [
     sender: "other",
     timestamp: "10:34 AM"
   },
-  { 
-    id: "6", 
-    content: "The encryption on this channel held. Headquarters confirms no intercepts.", 
-    sender: "user", 
-    timestamp: "10:35 AM",
-  },
+  // { 
+  //   id: "6", 
+  //   content: "The encryption on this channel held. Headquarters confirms no intercepts.", 
+  //   sender: "user", 
+  //   timestamp: "10:35 AM",
+  // },
 ]
 
 export function ChatDemo() {
