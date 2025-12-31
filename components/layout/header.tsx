@@ -20,8 +20,7 @@ const navLinks = [
 ]
 
 const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/Omair-Akbar/frontend-chatapp"
-const GITHUB_API_URL =
-  process.env.NEXT_PUBLIC_GITHUB_API_URL || "https://api.github.com/repos/Omair-Akbar/frontend-chatapp"
+const GITHUB_API_URL = process.env.NEXT_PUBLIC_GITHUB_API_URL || "https://api.github.com/repositories/1116313496"
 
 function formatStarCount(count: number): string {
   if (count >= 1000) {
@@ -37,15 +36,15 @@ function GitHubStars() {
   useEffect(() => {
     const fetchStars = async () => {
       try {
-        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(GITHUB_API_URL)}`)
-        const data = await response.json()
-
-        if (data.contents) {
-          const repoData = JSON.parse(data.contents)
-          setStarCount(repoData.stargazers_count || 0)
+        const response = await fetch(GITHUB_API_URL)
+        if (!response.ok) {
+          console.error("Failed to fetch GitHub stars")
         }
+        const data: any = await response.json()
+
+        setStarCount(typeof data.stargazers_count === "number" ? data.stargazers_count : 0)
       } catch (error) {
-        console.error("Failed to fetch GitHub stars:", error)
+        // console.error("Failed to fetch GitHub stars:", error)
         setStarCount(0)
       } finally {
         setIsLoading(false)
