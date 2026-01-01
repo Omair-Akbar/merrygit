@@ -19,7 +19,7 @@ const navLinks = [
   { href: "/privacy", label: "Privacy" },
 ]
 
-const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/Omair-Akbar/frontend-chatapp"
+const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/Omair-Akbar/merrygit"
 const GITHUB_API_URL = process.env.NEXT_PUBLIC_GITHUB_API_URL || "https://api.github.com/repositories/1116313496"
 
 function formatStarCount(count: number): string {
