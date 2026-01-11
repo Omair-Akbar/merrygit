@@ -137,13 +137,19 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-inter), sans-serif;
   }
 
   /* <CHANGE> Apply Exo font to all heading elements */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-exo), sans-serif;
     font-weight: 600;
   }
@@ -178,12 +184,14 @@ html::-webkit-scrollbar {
 /* Hide scrollbar for IE, Edge and Firefox */
 .scrollbar-hidden,
 html {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 
-/* From Uiverse.io by gharsh11032000 */ 
+/* From Uiverse.io by gharsh11032000 */
 /* The switch - the box around the slider */
 .switch {
   font-size: 17px;
@@ -219,21 +227,53 @@ html {
   bottom: 0.3em;
   background-color: white;
   border-radius: 50px;
-  box-shadow: 0 0px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.4);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.switch input:checked + .slider {
+.switch input:checked+.slider {
   background: #7c7c7c;
 }
 
-.switch input:focus + .slider {
+.switch input:focus+.slider {
   box-shadow: 0 0 1px #7c7c7c;
 }
 
-.switch input:checked + .slider:before {
+.switch input:checked+.slider:before {
   transform: translateX(1.6em);
   width: 1.8em;
   height: 1.8em;
   bottom: 0;
+}
+
+/* Make switch smaller on small screens */
+@media (max-width: 640px) {
+
+  .switch {
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: 3em;
+    height: 1.33em;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 0.8em;
+    width: 0.8em;
+    left: 0.3em;
+    bottom: 0.3em;
+    background-color: white;
+    border-radius: 50px;
+    box-shadow: 0 0px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .switch input:checked+.slider:before {
+    transform: translateX(1.6em);
+    width: 1.3em;
+    height: 1.3em;
+    bottom: 0;
+  }
 }

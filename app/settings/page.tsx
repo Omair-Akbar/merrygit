@@ -216,7 +216,7 @@ export default function SettingsPage() {
                 <User className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1">
                   <p className="font-bold text-sm">My Profile</p>
-                  <p className="text-sm text-muted-foreground">Edit your profile information</p>
+                  <p className="text-xs text-muted-foreground">Edit your profile information</p>
                 </div>
               </Link>
               <Link
@@ -226,7 +226,7 @@ export default function SettingsPage() {
                 <Shield className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1">
                   <p className="font-bold text-sm">Change Password</p>
-                  <p className="text-sm text-muted-foreground">Update your password</p>
+                  <p className="text-xs text-muted-foreground">Update your password</p>
                 </div>
               </Link>
             </div>
@@ -238,7 +238,7 @@ export default function SettingsPage() {
             <div className="p-4 rounded-lg border border-border space-y-4">
               <div>
                 <Label className="text-base">Theme</Label>
-                <p className="text-sm text-muted-foreground mb-3">Choose your preferred theme</p>
+                <p className="text-xs text-muted-foreground mb-3">Choose your preferred theme</p>
                 <RadioGroup value={theme} onValueChange={(value: any) => setTheme(value)} className="flex gap-4">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="light" id="light" />
@@ -272,7 +272,7 @@ export default function SettingsPage() {
             <div className="p-4 rounded-lg border border-border space-y-4">
               <div>
                 <Label className="text-base">Display Mode</Label>
-                <p className="text-sm text-muted-foreground mb-3">How locked messages appear in chat</p>
+                <p className="text-xs text-muted-foreground mb-3">How locked messages appear in chat</p>
                 <RadioGroup
                   value={lockDisplayMode}
                   onValueChange={(value: any) => dispatch(setLockDisplayMode(value as "text" | "icon" | "custom"))}
@@ -322,7 +322,7 @@ export default function SettingsPage() {
           </section>
 
           {/* Notifications Section */}
-          <section className="space-y-4">
+          {/* <section className="space-y-4">
             <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Notifications</h2>
             <div className="p-4 rounded-lg border border-border space-y-4">
               <div className="flex items-center justify-between">
@@ -330,7 +330,7 @@ export default function SettingsPage() {
                   <Bell className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <p className="font-bold text-sm">Push Notifications</p>
-                    <p className="text-sm text-muted-foreground">Get notified about new messages</p>
+                    <p className="text-xs text-muted-foreground">Get notified about new messages</p>
                   </div>
                 </div>
                 <label className="switch">
@@ -342,7 +342,7 @@ export default function SettingsPage() {
                   <Volume2 className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <p className="font-bold text-sm">Sound</p>
-                    <p className="text-sm text-muted-foreground">Play sound for notifications</p>
+                    <p className="text-xs text-muted-foreground">Play sound for notifications</p>
                   </div>
                 </div>
                 <label className="switch">
@@ -350,7 +350,7 @@ export default function SettingsPage() {
                   <span className="slider"></span>
                 </label>              </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Legal Section */}
           <section className="space-y-4">

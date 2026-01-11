@@ -21,8 +21,8 @@ export function UserStatusIndicator({
 }: UserStatusIndicatorProps) {
   const sizeClasses = {
     sm: {
-      dot: "h-2 w-2",
-      icon: "h-3 w-3",
+      dot: "h-2.5 w-2.5",
+      icon: "h-4 w-4",
       container: "gap-1",
     },
     md: {
@@ -57,20 +57,24 @@ export function UserStatusIndicator({
       </motion.div>
 
       {/* Viewing status icon */}
-      {showViewingStatus && (
-        <motion.div
-          initial={{ opacity: 0, x: -5 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-          title={isViewing ? "Currently viewing chat" : "Not viewing chat"}
-        >
-          {isViewing ? (
-            <Eye className={cn(sizes.icon, "text-foreground")} />
-          ) : (
-            <EyeOff className={cn(sizes.icon, "text-muted-foreground")} />
+      {isViewing &&
+        <>
+          {showViewingStatus && (
+            <motion.div
+              initial={{ opacity: 0, x: -5 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              title={isViewing ? "Currently viewing chat" : "Not viewing chat"}
+            >
+              {isViewing ? (
+                <Eye className={cn(sizes.icon, "text-foreground")} />
+              ) : (
+                <EyeOff className={cn(sizes.icon, "text-muted-foreground")} />
+              )}
+            </motion.div>
           )}
-        </motion.div>
-      )}
+        </>
+        }
     </div>
   )
 }
