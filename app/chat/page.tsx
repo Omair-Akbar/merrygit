@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, ArrowLeft, Shield } from "lucide-react"
+import { Menu, ArrowLeft, Shield, Lock } from "lucide-react"
 import Link from "next/link"
 import { Logo } from "@/components/ui/logo"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -205,9 +205,9 @@ export default function ChatPage() {
     <div className="h-screen flex flex-col bg-background">
       <header className="h-14 border-b border-border flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          {/* <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             <Menu className="h-5 w-5" />
-          </Button>
+          </Button> */}
           <Logo size={28} />
           <span className="font-semibold hidden sm:inline">MerryGit</span>
         </div>
@@ -228,7 +228,7 @@ export default function ChatPage() {
         <main className={cn("flex-1 flex flex-col", !activeChat && "hidden md:flex")}>
           {activeChat ? (
             <>
-              <div className="h-16 border-b border-border flex items-center gap-3 px-4">
+              <div className="h-16 border-b border-border flex items-center px-4">
                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setActiveChat(null)}>
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -242,14 +242,7 @@ export default function ChatPage() {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="absolute -bottom-0.5 -right-0.5">
-                      <div
-                        className={cn(
-                          "h-3 w-3 rounded-full border-2 border-background",
-                          activePresence.isOnline || activeChat.isOnline ? "bg-green-500" : "bg-muted-foreground/50",
-                        )}
-                      />
-                    </div>
+                    
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -264,8 +257,8 @@ export default function ChatPage() {
                     <p className="text-xs text-muted-foreground">@{activeChat.participantUsername}</p>
                   </div>
                 </Link>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Shield className="h-3 w-3" />
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Lock className="h-4 w-4" />
                   <span className="hidden sm:inline">End-to-end encrypted</span>
                 </div>
               </div>

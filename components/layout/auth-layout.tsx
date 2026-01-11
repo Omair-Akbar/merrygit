@@ -15,7 +15,7 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-[80vh] flex flex-col mt-20">
       <header className="absolute top-0 left-0 right-0 z-10 p-4 flex justify-between items-center">
         <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
@@ -26,7 +26,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4">
+      <main className="flex items-center justify-center p-4 mt-12 md:mt-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

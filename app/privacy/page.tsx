@@ -103,7 +103,7 @@ export default function PrivacyPage() {
               <p className="text-muted-foreground leading-relaxed">
                 If you have any questions about this Privacy Policy, please contact us at:
               </p>
-              <p className="text-foreground">privacy@MerryGit.app</p>
+              <p className="text-foreground">Info@MerryGit.app</p>
             </section>
           </motion.div>
         </div>

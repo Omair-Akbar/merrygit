@@ -329,13 +329,14 @@ export function EditProfileForm() {
               <AvatarImage src={user?.avatar || ""} alt={user?.name} className="object-cover" />
               <AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 cursor-pointer">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 disabled={isLoading}
                 onClick={() => document.getElementById("avatar-input")?.click()}
+                className="cursor-pointer dark:text-black dark:bg-white hover:dark:bg-gray-200"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 Upload

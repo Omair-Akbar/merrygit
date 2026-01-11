@@ -113,14 +113,6 @@ export function ChatSidebar({ chats, activeChat, onSelectChat, isOpen, onToggle 
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="absolute -bottom-0.5 -right-0.5">
-                        <div
-                          className={cn(
-                            "h-3 w-3 rounded-full border-2 border-background",
-                            isOnline ? "bg-green-500" : "bg-muted-foreground/50",
-                          )}
-                        />
-                      </div>
                     </div>
 
                     <div className="flex-1 min-w-0">

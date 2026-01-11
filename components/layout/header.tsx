@@ -90,7 +90,7 @@ export function Header() {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
 
   const handleLogout = async () => {
     try {

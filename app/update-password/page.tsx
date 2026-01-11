@@ -75,7 +75,7 @@ export default function UpdatePasswordPage() {
     <div className="min-h-screen bg-background">
       <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="cursor-pointer">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <span className="font-semibold">Change Password</span>

@@ -115,7 +115,7 @@ export default function SettingsPage() {
       {/* Header */}
       <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="cursor-pointer">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <span className="font-semibold">Settings</span>
@@ -126,7 +126,7 @@ export default function SettingsPage() {
       <main className="container mx-auto max-w-2xl px-4 py-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Profile Picture</h2>
+            <h2 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Profile Picture</h2>
             <div className="p-4 rounded-lg border border-border ">
               <div className="flex items-center gap-4">
                 <div className="relative">
@@ -150,7 +150,7 @@ export default function SettingsPage() {
                   </Button> */}
                 </div>
                 <div className="flex-1 space-y-2">
-                  <p className="font-medium">{currentUser.name}</p>
+                  <p className="font-bold text-base">{currentUser.name}</p>
                   <p className="text-sm text-muted-foreground">@{currentUser.username}</p>
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function SettingsPage() {
 
           {/* Account Section */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Account</h2>
+            <h2 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Account</h2>
             <div className="space-y-2">
               <Link
                 href="/profile"
@@ -215,8 +215,8 @@ export default function SettingsPage() {
               >
                 <User className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1">
-                  <p className="font-medium">My Profile</p>
-                  <p className="text-sm text-muted-foreground">Edit your profile information</p>
+                  <p className="font-bold text-sm">My Profile</p>
+                  <p className="text-xs text-muted-foreground">Edit your profile information</p>
                 </div>
               </Link>
               <Link
@@ -225,8 +225,8 @@ export default function SettingsPage() {
               >
                 <Shield className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1">
-                  <p className="font-medium">Change Password</p>
-                  <p className="text-sm text-muted-foreground">Update your password</p>
+                  <p className="font-bold text-sm">Change Password</p>
+                  <p className="text-xs text-muted-foreground">Update your password</p>
                 </div>
               </Link>
             </div>
@@ -234,12 +234,12 @@ export default function SettingsPage() {
 
           {/* Appearance Section */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Appearance</h2>
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Appearance</h2>
             <div className="p-4 rounded-lg border border-border space-y-4">
               <div>
                 <Label className="text-base">Theme</Label>
-                <p className="text-sm text-muted-foreground mb-3">Choose your preferred theme</p>
-                <RadioGroup value={theme} onValueChange={(value) => setTheme(value)} className="flex gap-4">
+                <p className="text-xs text-muted-foreground mb-3">Choose your preferred theme</p>
+                <RadioGroup value={theme} onValueChange={(value: any) => setTheme(value)} className="flex gap-4">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="light" id="light" />
                     <Label htmlFor="light" className="flex items-center gap-2 cursor-pointer">
@@ -268,14 +268,14 @@ export default function SettingsPage() {
 
           {/* Locked Messages Section */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Locked Messages</h2>
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Locked Messages</h2>
             <div className="p-4 rounded-lg border border-border space-y-4">
               <div>
                 <Label className="text-base">Display Mode</Label>
-                <p className="text-sm text-muted-foreground mb-3">How locked messages appear in chat</p>
+                <p className="text-xs text-muted-foreground mb-3">How locked messages appear in chat</p>
                 <RadioGroup
                   value={lockDisplayMode}
-                  onValueChange={(value) => dispatch(setLockDisplayMode(value as "text" | "icon" | "custom"))}
+                  onValueChange={(value: any) => dispatch(setLockDisplayMode(value as "text" | "icon" | "custom"))}
                   className="space-y-3"
                 >
                   <div className="flex items-center space-x-3">
@@ -322,42 +322,46 @@ export default function SettingsPage() {
           </section>
 
           {/* Notifications Section */}
-          <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Notifications</h2>
+          {/* <section className="space-y-4">
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Notifications</h2>
             <div className="p-4 rounded-lg border border-border space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Bell className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Push Notifications</p>
-                    <p className="text-sm text-muted-foreground">Get notified about new messages</p>
+                    <p className="font-bold text-sm">Push Notifications</p>
+                    <p className="text-xs text-muted-foreground">Get notified about new messages</p>
                   </div>
                 </div>
-                <Switch checked={notifications} onCheckedChange={() => dispatch(toggleNotifications())} />
-              </div>
+                <label className="switch">
+                  <input type="checkbox" checked={notifications} onChange={() => dispatch(toggleNotifications())} />
+                  <span className="slider"></span>
+                </label>              </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Volume2 className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Sound</p>
-                    <p className="text-sm text-muted-foreground">Play sound for notifications</p>
+                    <p className="font-bold text-sm">Sound</p>
+                    <p className="text-xs text-muted-foreground">Play sound for notifications</p>
                   </div>
                 </div>
-                <Switch checked={soundEnabled} onCheckedChange={() => dispatch(toggleSound())} />
-              </div>
+                <label className="switch">
+                  <input type="checkbox" checked={soundEnabled} onChange={() => dispatch(toggleSound())} />
+                  <span className="slider"></span>
+                </label>              </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Legal Section */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Legal</h2>
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Legal</h2>
             <div className="space-y-2">
               <Link
                 href="/privacy"
                 className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-accent transition-colors"
               >
                 <Shield className="h-5 w-5 text-muted-foreground" />
-                <p className="font-medium">Privacy Policy</p>
+                <p className="font-bold text-sm">Privacy Policy</p>
               </Link>
             </div>
           </section>
