@@ -11,7 +11,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
-    // dispatch(getCurrentUser())
+    dispatch(getCurrentUser())
   }, [dispatch])
 
   return <>{children}</>
