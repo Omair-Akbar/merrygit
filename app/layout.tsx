@@ -4,6 +4,7 @@ import { Inter, Geist_Mono, Exo } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
 import { Toaster } from "react-hot-toast"
+import { LoadingWrapper } from "@/components/LoadingWrapper"
 
 // <CHANGE> Load Inter font for body text
 const inter = Inter({
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
-  generator: 'v0.app'
+  generator: 'merrygit'
 }
 
 export default function RootLayout({
@@ -38,37 +39,39 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
     <html lang="en" suppressHydrationWarning className={`${exo.variable} ${inter.variable}`}>
       <body className="antialiased">
-
         <Providers>
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: 'var(--background)',
-                borderRadius: '10px',
-                color: 'var(--foreground)',
-                border: '1px solid var(--border)',
-                fontFamily: 'var(--font-inter), sans-serif',
-              },
-              success: {
-                iconTheme: {
-                  primary: 'var(--success)',
-                  secondary: 'var(--background)',
+          <LoadingWrapper>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'var(--background)',
+                  borderRadius: '10px',
+                  color: 'var(--foreground)',
+                  border: '1px solid var(--border)',
+                  fontFamily: 'var(--font-inter), sans-serif',
                 },
-              },
-              error: {
-                iconTheme: {
-                  primary: 'var(--destructive)',
-                  secondary: 'var(--background)',
+                success: {
+                  iconTheme: {
+                    primary: 'var(--success)',
+                    secondary: 'var(--background)',
+                  },
                 },
-              },
-            }}
-          />
-          {children}
+                error: {
+                  iconTheme: {
+                    primary: 'var(--destructive)',
+                    secondary: 'var(--background)',
+                  },
+                },
+              }}
+            />
+            {children}
+          </LoadingWrapper>
         </Providers>
       </body>
     </html>
