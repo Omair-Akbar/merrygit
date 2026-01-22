@@ -31,6 +31,7 @@ export function SignupForm() {
     confirmPassword: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false)
   const confirmPassword = formData.confirmPassword // Declare confirmPassword variable
 
   const getPasswordChecks = (pass: string) => ({
@@ -62,13 +63,7 @@ export function SignupForm() {
       if (!formData.name.trim()) {
         newErrors.name = "Name is required"
       }
-    }
-    //  else if (step === 2) {
-    //   if (!formData.phoneNumber.trim()) {
-    //     newErrors.phoneNumber = "Phone number is required"
-    //   }
-    // }
-     else if (step === 3) {
+    } else if (step === 3) {
       if (!validateUsername(formData.username)) {
         newErrors.username = "Username must be 3-20 characters (letters, numbers, underscore)"
       }
@@ -90,12 +85,15 @@ export function SignupForm() {
   const handleNext = () => {
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(prev + 1, 3))
+      setErrors({})
+      setShowPasswordRequirements(false)
     }
   }
 
   const handleBack = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 1))
     setErrors({})
+    setShowPasswordRequirements(false)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +102,12 @@ export function SignupForm() {
       ...prev,
       [name]: name === "username" ? value.toLowerCase() : value,
     }))
+    
+    // Show password requirements when user starts typing in password field
+    if (name === "password" && value.length > 0 && currentStep === 3) {
+      setShowPasswordRequirements(true)
+    }
+    
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev }
@@ -144,6 +148,7 @@ export function SignupForm() {
 
   const passwordChecks = getPasswordChecks(formData.password)
   const passwordStrength = getPasswordStrength(formData.password)
+  const passwordIsPerfect = Object.values(passwordChecks).every(Boolean)
 
   return (
     <div className="space-y-6">
@@ -272,7 +277,7 @@ export function SignupForm() {
                 />
                 {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
                 
-                {formData.password.length > 0 && (
+                {showPasswordRequirements && formData.password.length > 0 && !passwordIsPerfect && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -365,18 +370,6 @@ export function SignupForm() {
                             <span className="text-muted-foreground">One special character</span>
                           </motion.div>
                         )}
-                        {passwordChecks.length && passwordChecks.uppercase && passwordChecks.lowercase && passwordChecks.number && passwordChecks.special && (
-                          <motion.div
-                            key="complete"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            className="flex items-center gap-2"
-                          >
-                            <Check className="h-3 w-3 text-green-500" />
-                            <span className="text-green-500">Password meets all requirements!</span>
-                          </motion.div>
-                        )}
                       </AnimatePresence>
                     </div>
                   </motion.div>
@@ -419,13 +412,13 @@ export function SignupForm() {
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col-reverse md:flex-row gap-3">
+        <div className="flex flex-row md:flex-col-reverse gap-3">
           {currentStep > 1 && (
             <Button
               type="button"
               variant="outline"
               onClick={handleBack}
-              className="w-full bg-white dark:border-gray-300 dark:text-black dark:text-white"
+              className="w-full bg-white dark:border-gray-300 dark:text-white"
             >
               Back
             </Button>
