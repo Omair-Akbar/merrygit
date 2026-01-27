@@ -1,76 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Send, ImageIcon, Smile, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-
-// Common emoji list
-const EMOJI_LIST = [
-  "😀",
-  "😃",
-  "😄",
-  "😁",
-  "😅",
-  "😂",
-  "🤣",
-  "😊",
-  "😇",
-  "🙂",
-  "😉",
-  "😌",
-  "😍",
-  "🥰",
-  "😘",
-  "😋",
-  "😛",
-  "😜",
-  "🤪",
-  "😝",
-  "🤗",
-  "🤭",
-  "🤫",
-  "🤔",
-  "🤐",
-  "🤨",
-  "😐",
-  "😑",
-  "😶",
-  "😏",
-  "😒",
-  "🙄",
-  "😬",
-  "😮",
-  "😯",
-  "😲",
-  "😳",
-  "🥺",
-  "😢",
-  "😭",
-  "😤",
-  "😠",
-  "😡",
-  "🤬",
-  "😈",
-  "👿",
-  "💀",
-  "☠️",
-  "💩",
-  "🤡",
-  "👍",
-  "👎",
-  "👏",
-  "🙌",
-  "🤝",
-  "❤️",
-  "🧡",
-  "💛",
-  "💚",
-  "💙",
-]
+import { EmojiPicker } from "./emoji-picker"
 
 interface ChatInputProps {
   onSendMessage: (message: string, attachments?: File[]) => void
@@ -83,6 +19,29 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
   const [attachments, setAttachments] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const emojiButtonRef = useRef<HTMLButtonElement>(null)
+  const emojiPickerRef = useRef<HTMLDivElement>(null)
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showEmoji &&
+        emojiPickerRef.current &&
+        emojiButtonRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node) &&
+        !emojiButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowEmoji(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [showEmoji])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,6 +52,29 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     setAttachments([])
     setPreviewUrls([])
     setShowEmoji(false)
+    
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Submit on Enter, new line on Shift+Enter
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit(e)
+    }
+  }
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value)
+    
+    // Auto-resize textarea
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,6 +104,9 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
 
   const handleEmojiClick = (emoji: string) => {
     setMessage((prev) => prev + emoji)
+    if (textareaRef.current) {
+      textareaRef.current.focus()
+    }
   }
 
   return (
@@ -166,34 +151,12 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
       </AnimatePresence>
 
       {/* Emoji picker */}
-      <AnimatePresence>
-        {showEmoji && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="px-4 pt-3 overflow-hidden"
-          >
-            <div className="p-3 rounded-lg bg-secondary/50 border border-border">
-              <div className="grid grid-cols-10 gap-1 max-h-32 overflow-y-auto">
-                {EMOJI_LIST.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    onClick={() => handleEmojiClick(emoji)}
-                    className="p-1.5 hover:bg-accent rounded text-lg transition-colors"
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div ref={emojiPickerRef}>
+        <EmojiPicker isOpen={showEmoji} onEmojiSelect={handleEmojiClick} />
+      </div>
 
       {/* Input form */}
-      <form onSubmit={handleSubmit} className="p-4 flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="p-4 flex items-end gap-2">
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -210,31 +173,35 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           variant="ghost"
           size="icon"
           onClick={() => fileInputRef.current?.click()}
-          disabled={disabled}
+          // disabled={disabled}
           className="shrink-0"
         >
-          <ImageIcon className="h-5 w-5" />
+          <ImageIcon className="h-10 w-10" />
         </Button>
 
         {/* Emoji button */}
         <Button
+          ref={emojiButtonRef}
           type="button"
           variant="ghost"
           size="icon"
           onClick={() => setShowEmoji(!showEmoji)}
-          disabled={disabled}
+          // disabled={disabled}
           className={cn("shrink-0", showEmoji && "bg-accent")}
         >
-          <Smile className="h-5 w-5" />
+          <Smile className="h-10 w-10" />
         </Button>
 
         {/* Message input */}
-        <Input
+        <textarea
+          ref={textareaRef}
           placeholder="Type a message..."
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleMessageChange}
+          onKeyDown={handleKeyDown}
           disabled={disabled}
-          className="flex-1 bg-accent dark:bg-accent"
+          rows={1}
+          className="flex-1 resize-none bg-accent dark:bg-accent rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 max-h-32 overflow-y-auto"
         />
 
         {/* Send button */}

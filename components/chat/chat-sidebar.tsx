@@ -88,16 +88,16 @@ export function ChatSidebar({ chats, activeChat, onSelectChat, isOpen, onToggle 
               </div>
             </div>
 
-            <div className="px-4 pb-2 flex items-center justify-end gap-4">
-              <Link 
-                href="/requests" 
-                className="text-sm text-blue-500 hover:text-blue-600 hover:underline transition-colors"
+            <div className="flex items-center justify-end gap-4">
+              <Button variant="link"
+                // asChild
+                className="text-sm text-blue-500 hover:text-blue-600 hover:underline transition-colors font-normal"
               >
                 Requests (3)
-              </Link>
+              </Button >
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto border-t border-border/50">
               {filteredChats.map((chat) => {
                 const presence = getPresence(chat.participantId)
                 const isOnline = presence.isOnline || chat.isOnline || false
