@@ -115,18 +115,6 @@ export default function GlobalLoader() {
           <div className="absolute right-0 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-neutral-600 dark:bg-neutral-400" />
         </div>
       </div>
-
-      {/* Loading text */}
-      <div className="absolute bottom-1/3 flex items-center gap-1">
-        <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200 animate-pulse">
-          Loading
-        </span>
-        <span className="flex gap-1">
-          <span className="animate-bounce" style={{ animationDelay: "0ms" }}>.</span>
-          <span className="animate-bounce" style={{ animationDelay: "150ms" }}>.</span>
-          <span className="animate-bounce" style={{ animationDelay: "300ms" }}>.</span>
-        </span>
-      </div>
     </div>
   );
 }

@@ -57,7 +57,7 @@ export function ChatSidebar({ chats, activeChat, onSelectChat, isOpen, onToggle 
         onClick={onToggle}
         className={cn(
           "absolute top-20 z-20 h-8 w-8 rounded-full border border-border bg-background shadow-sm transition-all hidden md:flex",
-          isOpen ? "left-[304px]" : "left-2",
+          isOpen ? "left-76" : "left-2 opacity-50",
         )}
       >
         {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -83,9 +83,18 @@ export function ChatSidebar({ chats, activeChat, onSelectChat, isOpen, onToggle 
                   placeholder="Search conversations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 bg-accent dark:bg-accent"
                 />
               </div>
+            </div>
+
+            <div className="px-4 pb-2 flex items-center justify-end gap-4">
+              <Link 
+                href="/requests" 
+                className="text-sm text-blue-500 hover:text-blue-600 hover:underline transition-colors"
+              >
+                Requests (3)
+              </Link>
             </div>
 
             <div className="flex-1 overflow-y-auto">

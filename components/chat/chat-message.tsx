@@ -47,7 +47,7 @@ export function ChatMessage({
     >
       <motion.div
         onClick={() => onMessageClick(message.id)}
-        whileHover={{ scale: 1.01 }}
+        // whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
         className={cn(
           "max-w-[75%] sm:max-w-[60%] rounded-2xl px-4 py-2 cursor-pointer transition-all",
@@ -66,7 +66,7 @@ export function ChatMessage({
                     key={index}
                     src={attachment || "/placeholder.svg"}
                     alt={`Attachment ${index + 1}`}
-                    className="max-w-[200px] rounded-lg"
+                    className="max-w-50 rounded-lg"
                   />
                 ))}
               </div>

@@ -232,7 +232,7 @@ export default function ChatPage() {
                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setActiveChat(null)}>
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <Link href={`/user/${activeChat.participantUsername}`} className="flex items-center gap-3 flex-1">
+                <Link href={`/user/${activeChat.id}`} className="flex items-center gap-3 flex-1">
                   <div className="relative">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback className="bg-secondary text-secondary-foreground">

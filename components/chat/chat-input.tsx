@@ -142,7 +142,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.8, opacity: 0 }}
-                  className="relative flex-shrink-0"
+                  className="relative shrink-0"
                 >
                   <img
                     src={url || "/placeholder.svg"}
@@ -211,7 +211,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           size="icon"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          className="flex-shrink-0"
+          className="shrink-0"
         >
           <ImageIcon className="h-5 w-5" />
         </Button>
@@ -223,7 +223,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           size="icon"
           onClick={() => setShowEmoji(!showEmoji)}
           disabled={disabled}
-          className={cn("flex-shrink-0", showEmoji && "bg-accent")}
+          className={cn("shrink-0", showEmoji && "bg-accent")}
         >
           <Smile className="h-5 w-5" />
         </Button>
@@ -234,7 +234,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           disabled={disabled}
-          className="flex-1"
+          className="flex-1 bg-accent dark:bg-accent"
         />
 
         {/* Send button */}
@@ -242,7 +242,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           type="submit"
           size="icon"
           disabled={disabled || (!message.trim() && attachments.length === 0)}
-          className="flex-shrink-0 bg-secondary text-secondary-foreground hover:bg-accent"
+          className="shrink-0 bg-secondary text-secondary-foreground hover:bg-accent"
         >
           <Send className="h-4 w-4" />
         </Button>
