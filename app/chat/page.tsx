@@ -137,6 +137,7 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const { setViewingChat, setNotViewingChat } = useSocket()
+  const router = useRouter()
 
   useEffect(() => {
     if (activeChat) {
@@ -242,7 +243,7 @@ export default function ChatPage() {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
