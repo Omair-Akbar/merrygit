@@ -66,21 +66,21 @@ export default function GlobalLoader() {
 
         {/* Pulsing glow effect */}
         <div
-          className="
-            absolute
-            h-28 w-28
-            animate-pulse
-            rounded-full
-            bg-neutral-900
-            dark:bg-neutral-100
-            opacity-5
-            blur-xl
-          "
+          // className="
+          //   absolute
+          //   h-28 w-28
+          //   animate-pulse
+          //   rounded-full
+          //   bg-neutral-900
+          //   dark:bg-neutral-100
+          //   opacity-5
+          //   blur-xl
+          // "
         />
 
         {/* Logo container with subtle animation */}
         <div 
-          className="relative z-10 animate-pulse"
+          // className="relative z-10 animate-pulse"
           style={{ animationDuration: "2s" }}
         >
           {/* Light theme logo */}

@@ -67,21 +67,6 @@ export default function HomePage() {
           <div className="container relative z-10 mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-                {/* <motion.div variants={itemVariants}>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-secondary/50 text-sm mb-4"
-                  >
-                    <motion.span
-                      className="h-2 w-2 rounded-full bg-foreground"
-                      animate={{ opacity: [1, 0.5, 1] }}
-                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                    />
-                    End-to-end encrypted messaging
-                  </motion.div>
-                </motion.div> */}
 
                 <motion.h1
                   variants={itemVariants}
