@@ -13,13 +13,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { logoutUser } from "@/lib/store/slices/auth-slice"
 import { toast } from "react-hot-toast"
+import GlobalLoader from "../GlobalLoader"
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/privacy", label: "Privacy" },
 ]
 
-const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/Omair-Akbar/merrygit"  
+const GITHUB_REPO_URL = process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/Omair-Akbar/merrygit"
 const GITHUB_API_URL = process.env.NEXT_PUBLIC_GITHUB_API_URL || "https://api.github.com/repositories/1116313496"
 
 function formatStarCount(count: number): string {
@@ -31,7 +32,9 @@ function formatStarCount(count: number): string {
 
 function GitHubStars() {
   const [starCount, setStarCount] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingStars, setIsLoadingStars] = useState(true)
+  const { isLoading } = useAppSelector((state) => state.auth)
+
 
   useEffect(() => {
     const fetchStars = async () => {
@@ -47,7 +50,7 @@ function GitHubStars() {
         // console.error("Failed to fetch GitHub stars:", error)
         setStarCount(0)
       } finally {
-        setIsLoading(false)
+        setIsLoadingStars(false)
       }
     }
 
@@ -57,12 +60,18 @@ function GitHubStars() {
     return () => clearInterval(interval)
   }, [])
 
-  if (isLoading) {
+  if (isLoadingStars) {
     return (
       <div className="flex items-center gap-1.5">
         <Skeleton className="h-4 w-4 rounded" />
         <Skeleton className="h-4 w-8 rounded-full" />
       </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <GlobalLoader />
     )
   }
 

@@ -13,6 +13,8 @@ interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement>
 
 export function PasswordInput({ className, showStrength = false, value, ...props }: PasswordInputProps) {
   const [showPassword, setShowPassword] = React.useState(false)
+  const [wasAllMet, setWasAllMet] = React.useState(false)
+  const [hideAnimation, setHideAnimation] = React.useState(false)
 
   const password = typeof value === "string" ? value : ""
 
@@ -25,6 +27,21 @@ export function PasswordInput({ className, showStrength = false, value, ...props
   }
 
   const strength = Object.values(checks).filter(Boolean).length
+  const allChecksMet = Object.values(checks).every(Boolean)
+
+  React.useEffect(() => {
+    if (allChecksMet) {
+      setWasAllMet(true)
+      setHideAnimation(false)
+    } else if (wasAllMet && password.length === 0) {
+      setHideAnimation(true)
+      const timer = setTimeout(() => {
+        setWasAllMet(false)
+        setHideAnimation(false)
+      }, 300) // Match animation duration
+      return () => clearTimeout(timer)
+    }
+  }, [allChecksMet, wasAllMet, password])
 
   const getStrengthColor = () => {
     if (strength <= 2) return "bg-destructive"
@@ -33,10 +50,20 @@ export function PasswordInput({ className, showStrength = false, value, ...props
     return "bg-success"
   }
 
+  // Determine if we should show the strength indicators
+  const shouldShowStrength = showStrength && 
+    (password.length > 0 || hideAnimation) && 
+    !(wasAllMet && password.length === 0)
+
   return (
     <div className="space-y-2">
       <div className="relative">
-        <Input type={showPassword ? "text" : "password"} className={cn("pr-10", className)} value={value} {...props} />
+        <Input 
+          type={showPassword ? "text" : "password"} 
+          className={cn("pr-10", className)} 
+          value={value} 
+          {...props} 
+        />
         <Button
           type="button"
           variant="ghost"
@@ -53,17 +80,27 @@ export function PasswordInput({ className, showStrength = false, value, ...props
         </Button>
       </div>
       <AnimatePresence>
-        {showStrength && password.length > 0 && (
+        {shouldShowStrength && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+            animate={{ 
+              opacity: hideAnimation ? 0 : 1, 
+              height: hideAnimation ? 0 : "auto" 
+            }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
             className="space-y-2"
           >
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div
+                <motion.div
                   key={i}
+                  initial={false}
+                  animate={{ 
+                    scale: hideAnimation ? 0.8 : 1,
+                    opacity: hideAnimation ? 0 : 1
+                  }}
+                  transition={{ duration: 0.2 }}
                   className={cn(
                     "h-1 flex-1 rounded-full transition-colors",
                     i <= strength ? getStrengthColor() : "bg-muted",
@@ -72,11 +109,11 @@ export function PasswordInput({ className, showStrength = false, value, ...props
               ))}
             </div>
             <div className="grid grid-cols-2 gap-1 text-xs">
-              <PasswordCheck label="8+ characters" met={checks.length} />
-              <PasswordCheck label="Uppercase" met={checks.uppercase} />
-              <PasswordCheck label="Lowercase" met={checks.lowercase} />
-              <PasswordCheck label="Number" met={checks.number} />
-              <PasswordCheck label="Special char" met={checks.special} />
+              <PasswordCheck label="8+ characters" met={checks.length} hideAnimation={hideAnimation} />
+              <PasswordCheck label="Uppercase" met={checks.uppercase} hideAnimation={hideAnimation} />
+              <PasswordCheck label="Lowercase" met={checks.lowercase} hideAnimation={hideAnimation} />
+              <PasswordCheck label="Number" met={checks.number} hideAnimation={hideAnimation} />
+              <PasswordCheck label="Special char" met={checks.special} hideAnimation={hideAnimation} />
             </div>
           </motion.div>
         )}
@@ -85,11 +122,39 @@ export function PasswordInput({ className, showStrength = false, value, ...props
   )
 }
 
-function PasswordCheck({ label, met }: { label: string; met: boolean }) {
+function PasswordCheck({ 
+  label, 
+  met, 
+  hideAnimation 
+}: { 
+  label: string; 
+  met: boolean; 
+  hideAnimation?: boolean 
+}) {
   return (
-    <div className="flex items-center gap-1">
-      {met ? <Check className="h-3 w-3 text-success" /> : <X className="h-3 w-3 text-muted-foreground" />}
-      <span className={cn(met ? "text-foreground" : "text-muted-foreground")}>{label}</span>
-    </div>
+    <motion.div
+      initial={false}
+      animate={{ 
+        scale: hideAnimation ? 0.95 : 1,
+        opacity: hideAnimation ? 0 : 1
+      }}
+      transition={{ duration: 0.2 }}
+      className="flex items-center gap-1"
+    >
+      {met ? (
+        <motion.div
+          initial={false}
+          animate={{ scale: hideAnimation ? 0 : 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Check className="h-3 w-3 text-success" />
+        </motion.div>
+      ) : (
+        <X className="h-3 w-3 text-muted-foreground" />
+      )}
+      <span className={cn(met ? "text-foreground" : "text-muted-foreground")}>
+        {label}
+      </span>
+    </motion.div>
   )
 }

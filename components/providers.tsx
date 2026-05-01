@@ -6,13 +6,17 @@ import { Provider, useDispatch } from "react-redux"
 import { store, type AppDispatch } from "@/lib/store/store"
 import { ThemeProvider } from "@/components/theme-provider"
 import { getCurrentUser } from "@/lib/store/slices/auth-slice"
+import { useAppSelector } from "@/lib/store/hooks"
+
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
+    const { user } = useAppSelector((state) => state.auth)
+  
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
-    dispatch(getCurrentUser())
-  }, [dispatch])
+    if (!user) dispatch(getCurrentUser())
+  }, [dispatch, user])
 
   return <>{children}</>
 }

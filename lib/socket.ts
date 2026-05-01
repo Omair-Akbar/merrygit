@@ -26,7 +26,7 @@ export interface ClientToServerEvents {
 
 class SocketClient {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null
-  private url: string = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001"
+  private url: string = process.env.NEXT_PUBLIC_SOCKET_URL || "https://merrygit-chat-service.onrender.com/"
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
 
