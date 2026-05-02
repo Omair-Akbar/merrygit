@@ -1,5 +1,4 @@
 "use client"
-import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { ArrowLeft } from "lucide-react"
@@ -11,14 +10,7 @@ import { Button } from "@/components/ui/button"
 export default function ProfilePage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { user, isAuthenticated, isInitialized } = useAppSelector((state) => state.auth)
-
-
-  useEffect(() => {
-    if (isInitialized && !isAuthenticated) {
-      router.push("/login")
-    }
-  }, [isAuthenticated, isInitialized, router])
+  const { user, isInitialized } = useAppSelector((state) => state.auth)
 
   if (!isInitialized || !user) {
     return (

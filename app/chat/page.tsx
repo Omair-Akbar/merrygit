@@ -137,7 +137,6 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const { setViewingChat, setNotViewingChat } = useSocket()
-  const router = useRouter()
 
   useEffect(() => {
     if (activeChat) {
