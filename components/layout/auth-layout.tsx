@@ -89,7 +89,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4 relative z-10 mt-16 md:mt-20">
+      <main className="flex-1 flex items-center justify-center p-4 relative z-10 ">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="border rounded-xl bg-background/30 backdrop-blur-xl border-white/10 dark:border-white/5 p-6 shadow-2xl"
+            className="border rounded-xl bg-black/5  dark:bg-white/5 backdrop-blur-xl border-white/10 dark:border-white/5 p-6 shadow-2xl"
           >
             {children}
           </motion.div>

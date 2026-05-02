@@ -91,7 +91,7 @@ export function ChatDemo() {
         </div> */}
 
         {/* Inner Content Container to clip the beam and show glass background */}
-        <div className="relative z-10 bg-background/20 backdrop-blur-2xl rounded-[calc(1rem-1px)] overflow-hidden">
+        <div className="relative z-10 bg-black/5 dark:bg-white/5 backdrop-blur-2xl rounded-[calc(1rem-1px)] overflow-hidden">
           {/* Chat header */}
           <div className="px-4 py-3 border-b border-white/5 flex items-center gap-3">
             <Avatar className="h-10 w-10">
@@ -112,47 +112,47 @@ export function ChatDemo() {
           {/* Messages */}
           <div className="p-4 space-y-3 h-98 overflow-y-auto bg-transparent">
             {/* ... remaining content ... */}
-          <AnimatePresence mode="popLayout">
-            {demoMessages.map((message) => {
-              const isUnlocked = unlockedId === message.id
-              const isUser = message.sender === "user"
+            <AnimatePresence mode="popLayout">
+              {demoMessages.map((message) => {
+                const isUnlocked = unlockedId === message.id
+                const isUser = message.sender === "user"
 
-              return (
-                <motion.div
-                  key={message.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={cn("flex", isUser ? "justify-end" : "justify-start")}
-                >
+                return (
                   <motion.div
-                    onClick={() => handleMessageClick(message.id)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={cn(
-                      "max-w-[80%] rounded-2xl px-4 py-2 cursor-pointer transition-all backdrop-blur-sm",
-                      isUser
-                        ? "bg-purple-600/60 text-white rounded-br-md shadow-lg"
-                        : "bg-white/10 text-foreground rounded-bl-md border border-white/5",
-                    )}
+                    key={message.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={cn("flex", isUser ? "justify-end" : "justify-start")}
                   >
-                    {isUnlocked ? (
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm">
-                        {message.content}
-                      </motion.p>
-                    ) : (
-                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
-                        <Lock className="h-3 w-3 opacity-60" />
-                        <span className="text-sm italic opacity-60">Locked</span>
-                      </motion.div>
-                    )}
-                    <p className={cn("text-xs mt-1", isUnlocked ? "opacity-60" : "opacity-40")}>{message.timestamp}</p>
+                    <motion.div
+                      onClick={() => handleMessageClick(message.id)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={cn(
+                        "max-w-[80%] rounded-2xl px-4 py-2 cursor-pointer transition-all backdrop-blur-sm",
+                        isUser
+                          ? "bg-purple-600/60 text-white rounded-br-md shadow-lg"
+                          : "bg-white/10 text-foreground rounded-bl-md border border-white/5",
+                      )}
+                    >
+                      {isUnlocked ? (
+                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm">
+                          {message.content}
+                        </motion.p>
+                      ) : (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+                          <Lock className="h-3 w-3 opacity-60" />
+                          <span className="text-sm italic opacity-60">Locked</span>
+                        </motion.div>
+                      )}
+                      <p className={cn("text-xs mt-1", isUnlocked ? "opacity-60" : "opacity-40")}>{message.timestamp}</p>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              )
-            })}
-          </AnimatePresence>
-        </div>
+                )
+              })}
+            </AnimatePresence>
+          </div>
 
           <div className="px-4 py-3 border-t border-white/5 flex gap-2">
             <div className="flex items-center justify-center gap-4">
@@ -174,7 +174,7 @@ export function ChatDemo() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="text-center text-sm text-muted-foreground mt-4"
+        className="text-center text-sm text-muted-foreground mt-8"
       >
         Click on any message to unlock it
       </motion.p>

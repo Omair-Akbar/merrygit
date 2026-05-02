@@ -52,8 +52,8 @@ export function ChatMessage({
         className={cn(
           "max-w-[75%] sm:max-w-[60%] rounded-2xl px-4 py-2 cursor-pointer transition-all",
           isMe
-            ? "bg-message-sent text-message-sent-foreground rounded-br-sm"
-            : "bg-message-received text-message-received-foreground rounded-bl-sm",
+            ? "bg-purple-100/15 text-message-sent-foreground rounded-br-sm border border-purple-400/20"
+            : "bg-gray-800/30 text-message-received-foreground rounded-bl-sm border border-purple-400/20",
         )}
       >
         {isUnlocked ? (

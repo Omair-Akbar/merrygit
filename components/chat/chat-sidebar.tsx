@@ -100,7 +100,7 @@ export function ChatSidebar({ chats, activeChat, onSelectChat, isOpen, onToggle 
                     onClick={() => handleSelectChat(chat)}
                     whileHover={{ backgroundColor: "var(--color-accent)" }}
                     className={cn(
-                      "w-full p-4 flex items-center gap-3 border-b border-border/50 transition-colors text-left",
+                      "w-full p-4 flex items-center gap-3 border border-purple-400/50 transition-colors text-left rounded-xl m-2 mr-0",
                       activeChat?.id === chat.id && "bg-accent",
                     )}
                   >

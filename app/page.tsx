@@ -157,7 +157,7 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* ─── Hero Section with BackgroundBeamsWithCollision ─── */}
-        <BackgroundBeamsWithCollision className="min-h-[90vh] md:min-h-screen flex-col py-20 md:py-32 bg-transparent!">
+        <BackgroundBeamsWithCollision className="min-h-[90vh] md:min-h-screen flex-col py-20 md:py-32 bg-transparent! mt-5">
           <div className="container relative z-10 mx-auto px-4 w-full">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <motion.div
