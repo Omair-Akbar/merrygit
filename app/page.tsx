@@ -55,14 +55,58 @@ const itemVariants = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-background overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
+      {/* Background Gradient Elements */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Looping Morphing Shapes */}
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 0.9, 1.1, 1],
+            x: [0, 100, -50, 50, 0],
+            y: [0, -50, 100, -20, 0],
+            borderRadius: ["50% 50% 50% 50%", "30% 70% 70% 30% / 30% 30% 70% 70%", "60% 40% 30% 70% / 60% 30% 70% 40%", "50% 50% 50% 50%"],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] right-[-5%] w-[70%] h-[70%] bg-purple-600/10 blur-[130px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1.2, 0.9, 1.1, 1, 1.2],
+            x: [0, -80, 40, -20, 0],
+            y: [0, 100, -60, 40, 0],
+            borderRadius: ["50% 50% 50% 50%", "70% 30% 30% 70% / 60% 60% 40% 40%", "40% 60% 40% 60% / 30% 70% 30% 70%", "50% 50% 50% 50%"],
+          }}
+          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[-10%] left-[-5%] w-[70%] h-[70%] bg-blue-600/10 blur-[130px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 0.8, 1.1, 1],
+            x: [0, 60, -80, 30, 0],
+            y: [0, 80, -40, 90, 0],
+            borderRadius: ["50% 50% 50% 50%", "40% 60% 80% 20% / 20% 40% 60% 80%", "50% 50% 50% 50%"],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute top-1/4 left-1/4 w-[50%] h-[50%] bg-indigo-500/10 blur-[140px]"
+        />
+        <motion.div
+          animate={{
+            scale: [0.8, 1.1, 1, 1.2, 0.8],
+            x: [0, -40, 70, -30, 0],
+            y: [0, -90, 40, -50, 0],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 8 }}
+          className="absolute bottom-1/4 right-1/4 w-[45%] h-[45%] bg-cyan-500/10 blur-[140px] rounded-full"
+        />
+      </div>
+
       <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative py-20 md:py-32">
           {/* Background effects */}
-          <AnimatedGrid />
+          {/* <AnimatedGrid /> */}
 
           <div className="container relative z-10 mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -174,8 +218,16 @@ export default function HomePage() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  className="group p-6 rounded-xl bg-card border border-border hover:border-foreground/20 transition-all duration-300"
+                  className="group relative p-6 rounded-xl bg-background/20 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl overflow-hidden"
                 >
+                  {/* Beam Animation Effect */}
+                  <motion.div
+                    initial={{ left: "-100%" }}
+                    whileHover={{ left: "100%" }}
+                    transition={{ duration: 0.6 }}
+                    className="absolute top-0 h-[2px] w-full bg-linear-to-r from-transparent via-purple-500 to-transparent opacity-50"
+                  />
+                  
                   <motion.div
                     initial={{ scale: 1 }}
                     // whileHover={{ scale: 1.1, rotate: 5 }}
