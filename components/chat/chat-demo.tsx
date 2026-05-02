@@ -67,36 +67,51 @@ export function ChatDemo() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="relative rounded-2xl border border-white/10 bg-background/30 backdrop-blur-xl overflow-hidden shadow-2xl group"
+        className="relative rounded-2xl border border-white/10 bg-transparent group p-[1px] overflow-hidden shadow-2xl"
       >
-        {/* Beam Animation for Chat Demo */}
-        <motion.div
-          animate={{ x: ["-100%", "200%"] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          className="absolute top-0 left-0 h-[1.5px] w-1/2 bg-linear-to-r from-transparent via-blue-500/50 to-transparent z-10"
-        />
+        {/* Continuous Border Beam Animation */}
+        {/* <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-2xl">
+          <motion.div
+            animate={{
+              rotate: [0, 360],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            style={{
+              width: "200%",
+              height: "200%",
+              left: "-50%",
+              top: "-50%",
+            }}
+            className="absolute bg-[conic-gradient(from_0deg,transparent_0deg,transparent_280deg,rgba(168,85,247,0.9)_320deg,rgba(59,130,246,0.9)_360deg)]"
+          />
+        </div> */}
 
-        {/* Chat header */}
-        <div className="px-4 py-3 border-b border-border flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src="https://avatars.githubusercontent.com/u/159688251?v=4" alt="@MerryGit" />
-            <AvatarFallback>MG</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <p className="font-medium text-sm">Musa</p>
-            <div className="flex items-center w-max justify-center pt-1 gap-2">
-              {/* <p className="text-xs text-green-600 font-semibold ">Online</p> */}
-              <p className="text-xs text-muted-foreground/60">Active in chat</p>
+        {/* Inner Content Container to clip the beam and show glass background */}
+        <div className="relative z-10 bg-background/20 backdrop-blur-2xl rounded-[calc(1rem-1px)] overflow-hidden">
+          {/* Chat header */}
+          <div className="px-4 py-3 border-b border-white/5 flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src="https://avatars.githubusercontent.com/u/159688251?v=4" alt="@MerryGit" />
+              <AvatarFallback>MG</AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <p className="font-medium text-sm">Musa</p>
+              <div className="flex items-center w-max justify-center pt-1 gap-2">
+                <p className="text-xs text-muted-foreground/60">Active in chat</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Lock className="h-4 w-4" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Lock className="h-4 w-4" />
-            {/* <span>Encrypted</span> */}
-          </div>
-        </div>
 
-        {/* Messages */}
-        <div className="p-4 space-y-3 h-98 overflow-y-auto bg-transparent">
+          {/* Messages */}
+          <div className="p-4 space-y-3 h-98 overflow-y-auto bg-transparent">
+            {/* ... remaining content ... */}
           <AnimatePresence mode="popLayout">
             {demoMessages.map((message) => {
               const isUnlocked = unlockedId === message.id
@@ -139,18 +154,18 @@ export function ChatDemo() {
           </AnimatePresence>
         </div>
 
-        {/* Input */}
-        <div className="px-4 py-3 border-t border-border flex gap-2">
-          <div className="flex items-center justify-center gap-4">
-            <Smile className="h-4 w-4 text-gray-500" />
-            <ImageIcon className="h-4 w-4 text-gray-500" />
-          </div>
-          <Input placeholder="Type a message..." className="flex-1 bg-secondary border-0" disabled />
-          {/* add image icon and emoji icon */}
-          <div className="flex items-center justify-center gap-4">
-            <Button variant="ghost" className="p-2 rounded-full" disabled>
-              <Send className="h-4 w-4" />
-            </Button>
+          <div className="px-4 py-3 border-t border-white/5 flex gap-2">
+            <div className="flex items-center justify-center gap-4">
+              <Smile className="h-4 w-4 text-gray-500" />
+              <ImageIcon className="h-4 w-4 text-gray-500" />
+            </div>
+            <Input placeholder="Type a message..." className="flex-1 bg-white/5 border-0" disabled />
+            {/* add image icon and emoji icon */}
+            <div className="flex items-center justify-center gap-4">
+              <Button variant="ghost" className="p-2 rounded-full" disabled>
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </motion.div>
