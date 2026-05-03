@@ -69,11 +69,11 @@ function GitHubStars() {
     )
   }
 
-  if (isLoading) {
-    return (
-      <GlobalLoader />
-    )
-  }
+  // if (isLoading) {
+    // return (
+      // <GlobalLoader />
+    // )
+  // }
 
   return (
     <a

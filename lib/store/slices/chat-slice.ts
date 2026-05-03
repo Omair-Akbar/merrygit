@@ -22,6 +22,7 @@ export interface Chat {
   messages: Message[]
   isOnline: boolean
   isViewing: boolean
+  isRequest?: boolean
 }
 
 export interface UserPresence {

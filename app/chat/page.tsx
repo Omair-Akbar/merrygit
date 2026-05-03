@@ -1,130 +1,17 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Menu, ArrowLeft, Shield, Lock } from "lucide-react"
-import Link from "next/link"
-import { Logo } from "@/components/ui/logo"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { UserStatusIndicator } from "@/components/chat/user-status-indicator"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { useSocket } from "@/hooks/use-socket"
 import { unlockMessage, type Message, type Chat } from "@/lib/store/slices/chat-slice"
 import { ChatSidebar } from "@/components/chat/chat-sidebar"
-import { ChatInput } from "@/components/chat/chat-input"
-import { ChatMessage } from "@/components/chat/chat-message"
 import { cn } from "@/lib/utils"
-
-// Mock data for demo with online/viewing status
-const mockChats: Chat[] = [
-  {
-    id: "1",
-    participantId: "user1",
-    participantName: "Alice Johnson",
-    participantUsername: "alice",
-    unreadCount: 2,
-    isOnline: true,
-    isViewing: true,
-    messages: [
-      {
-        id: "m1",
-        content: "Hey, how are you?",
-        senderId: "user1",
-        receiverId: "me",
-        timestamp: "10:30 AM",
-        isEncrypted: true,
-        isRead: true,
-      },
-      {
-        id: "m2",
-        content: "I'm good, thanks! How about you?",
-        senderId: "me",
-        receiverId: "user1",
-        timestamp: "10:31 AM",
-        isEncrypted: true,
-        isRead: true,
-      },
-      {
-        id: "m3",
-        content: "Did you get the documents I sent?",
-        senderId: "user1",
-        receiverId: "me",
-        timestamp: "10:32 AM",
-        isEncrypted: true,
-        isRead: false,
-      },
-      {
-        id: "m4",
-        content: "Yes, reviewing them now!",
-        senderId: "me",
-        receiverId: "user1",
-        timestamp: "10:33 AM",
-        isEncrypted: true,
-        isRead: true,
-      },
-      {
-        id: "m5",
-        content: "Great, let me know your thoughts.",
-        senderId: "user1",
-        receiverId: "me",
-        timestamp: "10:34 AM",
-        isEncrypted: true,
-        isRead: false,
-      },
-    ],
-  },
-  {
-    id: "2",
-    participantId: "user2",
-    participantName: "Bob Smith",
-    participantUsername: "bobsmith",
-    unreadCount: 0,
-    isOnline: true,
-    isViewing: false,
-    messages: [
-      {
-        id: "m6",
-        content: "Meeting at 3pm tomorrow?",
-        senderId: "user2",
-        receiverId: "me",
-        timestamp: "9:15 AM",
-        isEncrypted: true,
-        isRead: true,
-      },
-      {
-        id: "m7",
-        content: "Sure, works for me!",
-        senderId: "me",
-        receiverId: "user2",
-        timestamp: "9:20 AM",
-        isEncrypted: true,
-        isRead: true,
-      },
-    ],
-  },
-  {
-    id: "3",
-    participantId: "user3",
-    participantName: "Carol Davis",
-    participantUsername: "carol_d",
-    unreadCount: 5,
-    isOnline: false,
-    isViewing: false,
-    messages: [
-      {
-        id: "m8",
-        content: "Check out this encrypted file",
-        senderId: "user3",
-        receiverId: "me",
-        timestamp: "Yesterday",
-        isEncrypted: true,
-        isRead: false,
-      },
-    ],
-  },
-]
+// import { ChatBackground } from "@/components/chat/chat-background"
+import { ChatHeader } from "@/components/chat/chat-header"
+import { ChatEmptyState } from "@/components/chat/chat-empty-state"
+import { ChatPanel } from "@/components/chat/chat-panel"
+import { mockChats } from "@/app/chat/mock-chats"
+import { ChatBackground } from "@/components/chat/chat-background"
 
 export default function ChatPage() {
   const dispatch = useAppDispatch()
@@ -203,63 +90,10 @@ export default function ChatPage() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      <header className="h-14 border-b border-border flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          {/* <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            <Menu className="h-5 w-5" />
-          </Button> */}
-          <Logo size={28} />
-          <span className="font-semibold hidden sm:inline">MerryGit</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-        </div>
-      </header>
+      <ChatHeader />
+      <ChatBackground />
 
-      <div className="absolute h-[80vh] inset-0 z-0 pointer-events-none">
-        {/* Looping Morphing Shapes */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 0.9, 1.1, 1],
-            x: [0, 100, -50, 50, 0],
-            y: [0, -50, 100, -20, 0],
-            borderRadius: ["50% 50% 50% 50%", "30% 70% 70% 30% / 30% 30% 70% 70%", "60% 40% 30% 70% / 60% 30% 70% 40%", "50% 50% 50% 50%"],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] right-[-5%] w-[70%] h-[70%] bg-purple-600/15 blur-[130px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 0.9, 1.1, 1, 1.2],
-            x: [0, -80, 40, -20, 0],
-            y: [0, 100, -60, 40, 0],
-            borderRadius: ["50% 50% 50% 50%", "70% 30% 30% 70% / 60% 60% 40% 40%", "40% 60% 40% 60% / 30% 70% 30% 70%", "50% 50% 50% 50%"],
-          }}
-          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-10%] left-[-5%] w-[70%] h-[70%] bg-blue-600/10 blur-[130px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.3, 0.8, 1.1, 1],
-            x: [0, 60, -80, 30, 0],
-            y: [0, 80, -40, 90, 0],
-            borderRadius: ["50% 50% 50% 50%", "40% 60% 80% 20% / 20% 40% 60% 80%", "50% 50% 50% 50%"],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 }}
-          className="absolute top-1/4 left-1/4 w-[50%] h-[50%] bg-indigo-500/10 blur-[140px]"
-        />
-        <motion.div
-          animate={{
-            scale: [0.8, 1.1, 1, 1.2, 0.8],
-            x: [0, -40, 70, -30, 0],
-            y: [0, -90, 40, -50, 0],
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 8 }}
-          className="absolute bottom-1/4 right-1/4 w-[45%] h-[45%] bg-cyan-500/10 blur-[140px] rounded-full"
-        />
-      </div>
-
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex min-h-0 overflow-hidden relative">
         <ChatSidebar
           chats={chats}
           activeChat={activeChat}
@@ -268,72 +102,21 @@ export default function ChatPage() {
           onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         />
 
-        <main className={cn("flex-1 flex flex-col", !activeChat && "hidden md:flex")}>
+        <main className={cn("flex-1 flex min-h-0 flex-col", !activeChat && "hidden md:flex")}>
           {activeChat ? (
-            <>
-              <div className="h-16 border-b border-border flex items-center px-4">
-                <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setActiveChat(null)}>
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <Link href={`/user/${activeChat.participantUsername}`} className="flex items-center gap-3 flex-1">
-                  <div className="relative">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-secondary text-secondary-foreground">
-                        {activeChat.participantName
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">{activeChat.participantName}</p>
-                      <UserStatusIndicator
-                        isOnline={activePresence.isOnline || activeChat.isOnline || false}
-                        isViewing={activePresence.isViewing || activeChat.isViewing || false}
-                        showViewingStatus={true}
-                        size="sm"
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground">@{activeChat.participantUsername}</p>
-                  </div>
-                </Link>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Lock className="h-4 w-4" />
-                  <span className="hidden sm:inline">End-to-end encrypted</span>
-                </div>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                <AnimatePresence mode="popLayout">
-                  {activeChat.messages.map((msg) => (
-                    <ChatMessage
-                      key={msg.id}
-                      message={msg}
-                      isUnlocked={unlockedMessageId === msg.id}
-                      lockDisplayMode={lockDisplayMode}
-                      customLockText={customLockText}
-                      onMessageClick={handleMessageClick}
-                    />
-                  ))}
-                </AnimatePresence>
-                <div ref={messagesEndRef} />
-              </div>
-
-              <ChatInput onSendMessage={handleSendMessage} />
-            </>
+            <ChatPanel
+              chat={activeChat}
+              unlockedMessageId={unlockedMessageId}
+              lockDisplayMode={lockDisplayMode}
+              customLockText={customLockText}
+              activePresence={activePresence}
+              messagesEndRef={messagesEndRef}
+              onMessageClick={handleMessageClick}
+              onSendMessage={handleSendMessage}
+              onBack={() => setActiveChat(null)}
+            />
           ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-4">
-                <Logo size={64} className="mx-auto" />
-                <div>
-                  <h2 className="text-xl font-semibold">Welcome to MerryGit</h2>
-                  <p className="text-muted-foreground">Select a conversation to start messaging</p>
-                </div>
-              </motion.div>
-            </div>
+            <ChatEmptyState />
           )}
         </main>
       </div>
