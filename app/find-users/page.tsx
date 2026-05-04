@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { searchUserThunk, clearSearch } from "@/lib/store/slices/user-slice"
+import { BackgroundGradient } from "@/components/chat/chat-background"
 
 export default function FindUsersPage() {
   const router = useRouter()
@@ -57,7 +58,7 @@ export default function FindUsersPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
+      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/5 backdrop-blur-xl z-10">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
@@ -66,6 +67,7 @@ export default function FindUsersPage() {
         </div>
         <ThemeToggle />
       </header>
+      <BackgroundGradient />
 
       <main className="container mx-auto max-w-2xl px-4 py-6">
         {/* Search Controls */}
