@@ -19,7 +19,7 @@ import { logoutUser } from "@/lib/store/slices/auth-slice"
 import { uploadAvatar, deleteAvatar } from "@/lib/store/slices/profile-slice"
 import { setLockDisplayMode, setCustomLockText } from "@/lib/store/slices/settings-slice"
 import { toast } from "react-hot-toast"
-import { BackgroundGradient } from "@/components/chat/chat-background"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function SettingsPage() {
   const router = useRouter()

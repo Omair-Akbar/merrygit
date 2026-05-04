@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { EditProfileForm } from "@/components/profile/edit-profile-form"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Button } from "@/components/ui/button"
-import { BackgroundGradient } from "@/components/chat/chat-background"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function ProfilePage() {
   const router = useRouter()

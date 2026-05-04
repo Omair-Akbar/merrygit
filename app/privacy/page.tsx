@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
-import { BackgroundGradient } from "@/components/chat/chat-background"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function PrivacyPage() {
   return (

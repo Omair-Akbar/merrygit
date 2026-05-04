@@ -7,7 +7,7 @@ import { Search, ChevronLeft, ChevronRight, Settings, UserPlus, MailQuestion, Me
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { UserStatusIndicator } from "@/components/chat/user-status-indicator"
+import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { unlockMessage, type Chat } from "@/lib/store/slices/chat-slice"
 import { cn } from "@/lib/utils"
@@ -111,7 +111,7 @@ export function ChatSidebar({
                   size="icon"
                   className={buttonClass(isDirectActive)}
                   aria-label="Direct chats"
-                  onClick={() => router.push("/chat?type=direct")}
+                  onClick={() => router.push("/chats?type=direct")}
                 >
                   <MessageSquare className="h-4 w-4" />
                 </Button>
@@ -120,7 +120,7 @@ export function ChatSidebar({
                   size="icon"
                   className={buttonClass(isGroupActive)}
                   aria-label="Group chats"
-                  onClick={() => router.push("/chat?type=group")}
+                  onClick={() => router.push("/chats?type=group")}
                 >
                   <Users className="h-4 w-4" />
                 </Button>
@@ -129,7 +129,7 @@ export function ChatSidebar({
                   size="icon"
                   className={buttonClass(isRequestsActive)}
                   aria-label="Requests"
-                  onClick={() => router.push("/chat?view=requests")}
+                  onClick={() => router.push("/chats?view=requests")}
                 >
                   <MailQuestion className="h-4 w-4" />
                 </Button>

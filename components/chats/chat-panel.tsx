@@ -6,9 +6,9 @@ import { AnimatePresence } from "framer-motion"
 import { ArrowLeft, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { UserStatusIndicator } from "@/components/chat/user-status-indicator"
-import { ChatInput } from "@/components/chat/chat-input"
-import { ChatMessage } from "@/components/chat/chat-message"
+import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
+import { ChatInput } from "@/components/chats/chat-input"
+import { ChatMessage } from "@/components/chats/chat-message"
 import type { Chat } from "@/lib/store/slices/chat-slice"
 
 interface ChatPanelProps {

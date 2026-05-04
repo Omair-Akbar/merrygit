@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks"
 import { changePassword } from "@/lib/store/slices/auth-slice"
 import { toast } from "react-hot-toast"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { BackgroundGradient } from "@/components/chat/chat-background"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function UpdatePasswordPage() {
   const router = useRouter()

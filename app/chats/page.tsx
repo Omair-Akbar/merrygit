@@ -5,14 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { useSocket } from "@/hooks/use-socket"
 import { unlockMessage, type Message, type Chat } from "@/lib/store/slices/chat-slice"
-import { ChatSidebar } from "@/components/chat/chat-sidebar"
+import { ChatSidebar } from "@/components/chats/chat-sidebar"
 import { cn } from "@/lib/utils"
-// import { ChatBackground } from "@/components/chat/chat-background"
-import { ChatHeader } from "@/components/chat/chat-header"
-import { ChatEmptyState } from "@/components/chat/chat-empty-state"
-import { ChatPanel } from "@/components/chat/chat-panel"
-import { mockChats } from "@/app/chat/mock-chats"
-import { BackgroundGradient } from "@/components/chat/chat-background"
+// import { ChatBackground } from "@/components/chats/chat-background"
+import { ChatHeader } from "@/components/chats/chat-header"
+import { ChatEmptyState } from "@/components/chats/chat-empty-state"
+import { ChatPanel } from "@/components/chats/chat-panel"
+import { mockChats } from "@/app/chats/mock-chats"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function ChatPage() {
   const dispatch = useAppDispatch()
@@ -117,7 +117,7 @@ export default function ChatPage() {
     if (!activeChat) return
     setChats((prev) => prev.map((chat) => (chat.id === activeChat.id ? { ...chat, isRequest: false } : chat)))
     setActiveChat((prev) => (prev ? { ...prev, isRequest: false } : prev))
-    router.push("/chat?type=direct")
+    router.push("/chats?type=direct")
   }
 
   const handleRejectRequest = () => {

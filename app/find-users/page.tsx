@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { searchUserThunk, clearSearch } from "@/lib/store/slices/user-slice"
-import { BackgroundGradient } from "@/components/chat/chat-background"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function FindUsersPage() {
   const router = useRouter()
