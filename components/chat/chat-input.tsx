@@ -234,7 +234,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           disabled={disabled}
-          className="flex-1"
+          className="flex-1 border active:border-blue-500/40 active:bg-blue-500/20 focus:ring-0 focus-visible:ring-0"
         />
 
         {/* Send button */}

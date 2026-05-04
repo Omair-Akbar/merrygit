@@ -115,12 +115,12 @@ export function Header() {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/20 backdrop-blur-xl"
+      className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/20 backdrop-blur-xl font-exo"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <Logo size={36} />
-          <span className="text-lg font-semibold">MerryGit</span>
+          <span className="text-lg font-semibold font-exo">MerryGit</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">

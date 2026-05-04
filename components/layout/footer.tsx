@@ -50,10 +50,10 @@ export function Footer() {
           <div className="col-span-2 space-y-5">
             <Link href="/" className="inline-flex items-center gap-2 group">
               <Logo size={32} />
-              <span className="font-bold text-lg tracking-tight">MerryGit</span>
+              <span className="font-bold text-lg tracking-tight font-exo">MerryGit</span>
             </Link>
 
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs font-exo">
               End-to-end encrypted messaging for those who value their privacy.
               Your conversations, only yours.
             </p>
@@ -111,7 +111,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground ">
           <p>
             &copy; {new Date().getFullYear()} MerryGit. All rights reserved.
           </p>

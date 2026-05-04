@@ -159,7 +159,7 @@ export default function HomePage() {
         {/* ─── Hero Section with BackgroundBeamsWithCollision ─── */}
         <BackgroundBeamsWithCollision className="min-h-[90vh] md:min-h-screen flex-col py-20 md:py-32Z bg-transparent!">
           <div className="container relative z-10 mx-auto px-4 w-full">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-12 items-center font-exo">
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -221,7 +221,7 @@ export default function HomePage() {
                       transition={{ delay: 0.8 + index * 0.1 }}
                       className="text-center"
                     >
-                      <div className="text-2xl font-bold">{stat.value}</div>
+                      <div className="text-2xl font-bold ">{stat.value}</div>
                       <div className="text-xs text-muted-foreground">
                         {stat.label}
                       </div>
@@ -251,7 +251,7 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-exo">
                 Security without compromise
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -268,7 +268,7 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  whileHover={{ transition: { duration: 0.2 } }}
                   className="group relative p-6 rounded-xl bg-background/20 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl overflow-hidden"
                 >
                   <motion.div
@@ -294,7 +294,7 @@ export default function HomePage() {
         </section>
 
         {/* ─── How it works ─── */}
-        <section className="py-20">
+        <section className="py-20 font-exo">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

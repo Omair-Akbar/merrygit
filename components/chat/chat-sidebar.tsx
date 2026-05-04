@@ -49,8 +49,8 @@ export function ChatSidebar({
 
   const buttonClass = (isActive: boolean) =>
     cn(
-      "h-10 w-10 rounded-md border border-border/70 transition-colors",
-      isActive ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
+      "h-14 w-14 flex items-center justify-center m-0.5 rounded-xl transition-colors bg-transparent",
+      isActive ? "border border-blue-500/40 bg-blue-500/20 text-foreground hover:bg-blue-500/20" : "text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all",
     )
 
   const filteredChats = chats.filter((chat) => {
@@ -86,7 +86,7 @@ export function ChatSidebar({
         onClick={onToggle}
         className={cn(
           "absolute top-20 z-20 h-8 w-8 rounded-full border border-border bg-background shadow-sm transition-all hidden md:flex",
-          isOpen ? "left-76.25" : "left-2.5",
+          isOpen ? "left-86.25" : "left-2.5",
         )}
       >
         {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -105,9 +105,9 @@ export function ChatSidebar({
             )}
           >
             <div className="flex w-full h-full">
-              <div className="w-16 shrink-0 border-r border-border/60 bg-background/70 backdrop-blur-sm flex flex-col items-center gap-2 py-4">
+              <div className="w-16 shrink-0 border-r border-border/60 bg-background/70 backdrop-blur-sm flex flex-col py-4">
                 <Button
-                  variant="ghost"
+                  // variant="ghost"
                   size="icon"
                   className={buttonClass(isDirectActive)}
                   aria-label="Direct chats"
@@ -116,7 +116,7 @@ export function ChatSidebar({
                   <MessageSquare className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant="ghost"
+                  // variant="ghost"
                   size="icon"
                   className={buttonClass(isGroupActive)}
                   aria-label="Group chats"
@@ -125,7 +125,7 @@ export function ChatSidebar({
                   <Users className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant="ghost"
+                  // variant="ghost"
                   size="icon"
                   className={buttonClass(isRequestsActive)}
                   aria-label="Requests"
@@ -134,7 +134,7 @@ export function ChatSidebar({
                   <MailQuestion className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant="ghost"
+                  // variant="ghost"
                   size="icon"
                   className={buttonClass(isFindUsersActive)}
                   aria-label="Add friend"
@@ -143,7 +143,7 @@ export function ChatSidebar({
                   <UserPlus className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant="ghost"
+                  // variant="ghost"
                   size="icon"
                   className={buttonClass(isProfileActive)}
                   aria-label="Profile"
@@ -153,7 +153,7 @@ export function ChatSidebar({
                 </Button>
                 <div className="flex-1" />
                 <Button
-                  variant="ghost"
+                  // variant="ghost"
                   size="icon"
                   className={buttonClass(isSettingsActive)}
                   aria-label="Settings"
@@ -202,7 +202,7 @@ export function ChatSidebar({
                               activeChat?.id === chat.id && "bg-accent",
                             )}
                           >
-                            <div className="relative">
+                            <div className="relative font-exo">
                               <Avatar className="h-12 w-12">
                                 <AvatarFallback className="bg-secondary text-secondary-foreground">
                                   {chat.participantName
@@ -215,13 +215,13 @@ export function ChatSidebar({
 
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
-                                <p className="font-medium truncate">{chat.participantName}</p>
-                                <span className="text-xs text-muted-foreground">
+                                <p className="font-medium truncate font-exo">{chat.participantName}</p>
+                                <span className="text-xs text-muted-foreground ">
                                   {chat.messages[chat.messages.length - 1]?.timestamp}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <p className="text-sm text-muted-foreground truncate">@{chat.participantUsername}</p>
+                                <p className="text-sm text-muted-foreground truncate ">@{chat.participantUsername}</p>
                                 <UserStatusIndicator
                                   isOnline={isOnline}
                                   isViewing={isViewing}

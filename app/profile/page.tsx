@@ -35,7 +35,7 @@ export default function ProfilePage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="cursor-pointer">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <span className="font-semibold">My Profile</span>
+          <span className="font-semibold font-exo">My Profile</span>
         </div>
         <ThemeToggle />
       </header>

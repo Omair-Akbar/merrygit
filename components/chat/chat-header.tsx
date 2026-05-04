@@ -8,7 +8,7 @@ export function ChatHeader() {
     <header className="h-14 border-b border-border flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
         <Logo size={28} />
-        <span className="font-semibold hidden sm:inline">MerryGit</span>
+        <span className="font-semibold hidden sm:inline font-exo">MerryGit</span>
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
