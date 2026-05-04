@@ -23,6 +23,7 @@ export interface Chat {
   isOnline: boolean
   isViewing: boolean
   isRequest?: boolean
+  isGroup?: boolean
 }
 
 export interface UserPresence {

@@ -21,6 +21,9 @@ interface ChatPanelProps {
   onMessageClick: (messageId: string) => void
   onSendMessage: (content: string, attachments?: File[]) => void
   onBack: () => void
+  mode?: "chat" | "request"
+  onAcceptRequest?: () => void
+  onRejectRequest?: () => void
 }
 
 export function ChatPanel({
@@ -33,7 +36,12 @@ export function ChatPanel({
   onMessageClick,
   onSendMessage,
   onBack,
+  mode = "chat",
+  onAcceptRequest,
+  onRejectRequest,
 }: ChatPanelProps) {
+  const isRequestMode = mode === "request"
+
   return (
     <>
       <div className="h-16 border-b border-border flex items-center px-4">
@@ -86,7 +94,26 @@ export function ChatPanel({
         <div ref={messagesEndRef} />
       </div>
 
-      <ChatInput onSendMessage={onSendMessage} />
+      {isRequestMode ? (
+        <div className="border-t border-border p-4 flex items-center gap-3">
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={onRejectRequest}
+          >
+            Reject
+          </Button>
+          <Button
+            variant="secondary"
+            className="flex-1"
+            onClick={onAcceptRequest}
+          >
+            Accept
+          </Button>
+        </div>
+      ) : (
+        <ChatInput onSendMessage={onSendMessage} />
+      )}
     </>
   )
 }

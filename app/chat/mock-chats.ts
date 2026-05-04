@@ -9,6 +9,7 @@ export const mockChats: Chat[] = [
     unreadCount: 2,
     isOnline: true,
     isViewing: true,
+    isGroup: false,
     messages: [
       {
         id: "m1",
@@ -65,6 +66,7 @@ export const mockChats: Chat[] = [
     unreadCount: 0,
     isOnline: true,
     isViewing: false,
+    isGroup: false,
     messages: [
       {
         id: "m6",
@@ -94,6 +96,7 @@ export const mockChats: Chat[] = [
     unreadCount: 5,
     isOnline: false,
     isViewing: false,
+    isGroup: false,
     messages: [
       {
         id: "m8",
@@ -101,6 +104,49 @@ export const mockChats: Chat[] = [
         senderId: "user3",
         receiverId: "me",
         timestamp: "Yesterday",
+        isEncrypted: true,
+        isRead: false,
+      },
+    ],
+  },
+  {
+    id: "4",
+    participantId: "group1",
+    participantName: "Design Guild",
+    participantUsername: "design-guild",
+    unreadCount: 3,
+    isOnline: true,
+    isViewing: false,
+    isGroup: true,
+    messages: [
+      {
+        id: "m9",
+        content: "Welcome to the guild!",
+        senderId: "group1",
+        receiverId: "me",
+        timestamp: "Yesterday",
+        isEncrypted: true,
+        isRead: false,
+      },
+    ],
+  },
+  {
+    id: "5",
+    participantId: "user4",
+    participantName: "Evan Brooks",
+    participantUsername: "evanb",
+    unreadCount: 1,
+    isOnline: false,
+    isViewing: false,
+    isRequest: true,
+    isGroup: false,
+    messages: [
+      {
+        id: "m10",
+        content: "Hey! Can we connect?",
+        senderId: "user4",
+        receiverId: "me",
+        timestamp: "Today",
         isEncrypted: true,
         isRead: false,
       },

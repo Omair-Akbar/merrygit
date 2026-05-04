@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { useSocket } from "@/hooks/use-socket"
 import { unlockMessage, type Message, type Chat } from "@/lib/store/slices/chat-slice"
@@ -22,6 +23,12 @@ export default function ChatPage() {
   const [activeChat, setActiveChat] = useState<Chat | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const viewParam = searchParams.get("view")
+  const typeParam = searchParams.get("type")
+  const [view, setView] = useState<"messages" | "requests">(viewParam === "requests" ? "requests" : "messages")
+  const [chatType, setChatType] = useState<"direct" | "group">(typeParam === "group" ? "group" : "direct")
 
   const { setViewingChat, setNotViewingChat } = useSocket()
 
@@ -39,6 +46,36 @@ export default function ChatPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [activeChat?.messages])
+
+  useEffect(() => {
+    setView(viewParam === "requests" ? "requests" : "messages")
+    setChatType(typeParam === "group" ? "group" : "direct")
+  }, [viewParam, typeParam])
+
+  useEffect(() => {
+    if (!activeChat) return
+    const isRequest = activeChat.isRequest || false
+    const isGroup = activeChat.isGroup || false
+
+    if (view === "requests" && !isRequest) {
+      setActiveChat(null)
+      return
+    }
+
+    if (view === "messages" && isRequest) {
+      setActiveChat(null)
+      return
+    }
+
+    if (view === "messages" && chatType === "group" && !isGroup) {
+      setActiveChat(null)
+      return
+    }
+
+    if (view === "messages" && chatType === "direct" && isGroup) {
+      setActiveChat(null)
+    }
+  }, [activeChat, view, chatType])
 
   const handleSendMessage = (content: string, attachments?: File[]) => {
     if (!activeChat) return
@@ -76,6 +113,19 @@ export default function ChatPage() {
     setActiveChat(chat)
   }
 
+  const handleAcceptRequest = () => {
+    if (!activeChat) return
+    setChats((prev) => prev.map((chat) => (chat.id === activeChat.id ? { ...chat, isRequest: false } : chat)))
+    setActiveChat((prev) => (prev ? { ...prev, isRequest: false } : prev))
+    router.push("/chat?type=direct")
+  }
+
+  const handleRejectRequest = () => {
+    if (!activeChat) return
+    setChats((prev) => prev.filter((chat) => chat.id !== activeChat.id))
+    setActiveChat(null)
+  }
+
   const getActiveUserPresence = () => {
     if (!activeChat) return { isOnline: false, isViewing: false }
     return (
@@ -100,6 +150,8 @@ export default function ChatPage() {
           onSelectChat={handleSelectChat}
           isOpen={isSidebarOpen}
           onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+          view={view}
+          chatType={chatType}
         />
 
         <main className={cn("flex-1 flex min-h-0 flex-col", !activeChat && "hidden md:flex")}>
@@ -114,6 +166,9 @@ export default function ChatPage() {
               onMessageClick={handleMessageClick}
               onSendMessage={handleSendMessage}
               onBack={() => setActiveChat(null)}
+              mode={view === "requests" ? "request" : "chat"}
+              onAcceptRequest={handleAcceptRequest}
+              onRejectRequest={handleRejectRequest}
             />
           ) : (
             <ChatEmptyState />
