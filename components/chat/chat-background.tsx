@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 
-export function ChatBackground() {
+export function BackgroundGradient() {
   return (
     <div className="absolute h-[80vh] inset-0 z-0 pointer-events-none w-72 md:w-375">
       <motion.div

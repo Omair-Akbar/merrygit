@@ -12,7 +12,7 @@ import { ChatHeader } from "@/components/chat/chat-header"
 import { ChatEmptyState } from "@/components/chat/chat-empty-state"
 import { ChatPanel } from "@/components/chat/chat-panel"
 import { mockChats } from "@/app/chat/mock-chats"
-import { ChatBackground } from "@/components/chat/chat-background"
+import { BackgroundGradient } from "@/components/chat/chat-background"
 
 export default function ChatPage() {
   const dispatch = useAppDispatch()
@@ -141,7 +141,7 @@ export default function ChatPage() {
   return (
     <div className="h-screen flex flex-col bg-background">
       <ChatHeader />
-      <ChatBackground />
+      <BackgroundGradient />
 
       <div className="flex-1 flex min-h-0 overflow-hidden relative">
         <ChatSidebar
