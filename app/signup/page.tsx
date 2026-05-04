@@ -13,7 +13,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/chat")
+      router.push("/chats")
     }
   }, [isAuthenticated, router])
 

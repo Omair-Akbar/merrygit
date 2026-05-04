@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 // ─── Route Configuration ────────────────────────────────────────────────────
 
 const PROTECTED_ROUTES = [
-	"/chat",
+	"/chats",
 	"/find-users",
 	"/settings",
 	"/profile",
@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
 
 	// Auth route + already authenticated → redirect to dashboard
 	if (isAuthRoute && isAuthenticated) {
-		return NextResponse.redirect(new URL("/chat", request.url));
+		return NextResponse.redirect(new URL("/chats", request.url));
 	}
 
 	return NextResponse.next();
@@ -80,7 +80,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
 	matcher: [
-		"/chat/:path*",
+		"/chats/:path*",
 		"/find-users/:path*",
 		"/settings/:path*",
 		"/profile/:path*",
