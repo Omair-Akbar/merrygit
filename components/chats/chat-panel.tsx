@@ -1,6 +1,7 @@
 "use client"
 
-import type React from "react"
+import type { RefObject } from "react"
+import { Fragment } from "react"
 import Link from "next/link"
 import { AnimatePresence } from "framer-motion"
 import { ArrowLeft, Lock } from "lucide-react"
@@ -17,7 +18,7 @@ interface ChatPanelProps {
   lockDisplayMode: "text" | "icon" | "custom"
   customLockText: string
   activePresence: { isOnline: boolean; isViewing: boolean }
-  messagesEndRef: React.RefObject<HTMLDivElement>
+  messagesEndRef: RefObject<HTMLDivElement>
   onMessageClick: (messageId: string) => void
   onSendMessage: (content: string, attachments?: File[]) => void
   onBack: () => void
@@ -41,6 +42,7 @@ export function ChatPanel({
   onRejectRequest,
 }: ChatPanelProps) {
   const isRequestMode = mode === "request"
+  let lastDayLabel: string | null = null
 
   return (
     <>
@@ -80,16 +82,44 @@ export function ChatPanel({
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         <AnimatePresence mode="popLayout">
-          {chat.messages.map((msg) => (
-            <ChatMessage
-              key={msg.id}
-              message={msg}
-              isUnlocked={unlockedMessageId === msg.id}
-              lockDisplayMode={lockDisplayMode}
-              customLockText={customLockText}
-              onMessageClick={onMessageClick}
-            />
-          ))}
+          {chat.messages.map((msg, index) => {
+            const dayLabel = msg.dayLabel || null
+            const isNewDay = dayLabel && dayLabel !== lastDayLabel
+            if (isNewDay) {
+              lastDayLabel = dayLabel
+            }
+
+            const previousMessage = chat.messages[index - 1]
+            const isNewSender =
+              !previousMessage ||
+              previousMessage.senderId !== msg.senderId ||
+              (previousMessage.dayLabel || null) !== dayLabel
+
+            const shouldShowGroupMeta = Boolean(chat.isGroup && isNewSender)
+            const senderName = msg.senderName || (msg.senderId === "me" ? "You" : "Unknown")
+
+            return (
+              <Fragment key={msg.id}>
+                {isNewDay && (
+                  <div className="flex items-center gap-3 py-2">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs text-muted-foreground font-medium">{dayLabel}</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+                )}
+                <ChatMessage
+                  message={msg}
+                  isUnlocked={unlockedMessageId === msg.id}
+                  lockDisplayMode={lockDisplayMode}
+                  customLockText={customLockText}
+                  onMessageClick={onMessageClick}
+                  showSenderMeta={shouldShowGroupMeta}
+                  senderName={shouldShowGroupMeta ? senderName : undefined}
+                  senderAvatar={shouldShowGroupMeta ? msg.senderAvatar : undefined}
+                />
+              </Fragment>
+            )
+          })}
         </AnimatePresence>
         <div ref={messagesEndRef} />
       </div>

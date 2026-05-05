@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { usePathname, useRouter } from "next/navigation"
 import { Search, ChevronLeft, ChevronRight, Settings, UserPlus, MailQuestion, MessageSquare, Users, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
@@ -39,9 +40,9 @@ export function ChatSidebar({
   const router = useRouter()
   const pathname = usePathname()
 
-  const isDirectActive = view === "messages" && chatType === "direct"
-  const isGroupActive = view === "messages" && chatType === "group"
-  const isRequestsActive = view === "requests"
+  const isDirectActive = pathname === "/chats"
+  const isGroupActive = pathname === "/chats/groups"
+  const isRequestsActive = pathname === "/chats/requests"
   const isFindUsersActive = pathname === "/find-users"
   const isProfileActive = pathname === "/profile"
   const isSettingsActive = pathname === "/settings"
@@ -106,61 +107,85 @@ export function ChatSidebar({
           >
             <div className="flex w-full h-full">
               <div className="w-16 shrink-0 border-r border-border/60 bg-background/70 backdrop-blur-sm flex flex-col py-4">
-                <Button
-                  // variant="ghost"
-                  size="icon"
-                  className={buttonClass(isDirectActive)}
-                  aria-label="Direct chats"
-                  onClick={() => router.push("/chats?type=direct")}
-                >
-                  <MessageSquare className="h-4 w-4" />
-                </Button>
-                <Button
-                  // variant="ghost"
-                  size="icon"
-                  className={buttonClass(isGroupActive)}
-                  aria-label="Group chats"
-                  onClick={() => router.push("/chats?type=group")}
-                >
-                  <Users className="h-4 w-4" />
-                </Button>
-                <Button
-                  // variant="ghost"
-                  size="icon"
-                  className={buttonClass(isRequestsActive)}
-                  aria-label="Requests"
-                  onClick={() => router.push("/chats?view=requests")}
-                >
-                  <MailQuestion className="h-4 w-4" />
-                </Button>
-                <Button
-                  // variant="ghost"
-                  size="icon"
-                  className={buttonClass(isFindUsersActive)}
-                  aria-label="Add friend"
-                  onClick={() => router.push("/find-users")}
-                >
-                  <UserPlus className="h-4 w-4" />
-                </Button>
-                <Button
-                  // variant="ghost"
-                  size="icon"
-                  className={buttonClass(isProfileActive)}
-                  aria-label="Profile"
-                  onClick={() => router.push("/profile")}
-                >
-                  <User className="h-4 w-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      className={buttonClass(isDirectActive)}
+                      aria-label="Direct chats"
+                      onClick={() => router.push("/chats")}
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Direct chats</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      className={buttonClass(isGroupActive)}
+                      aria-label="Group chats"
+                      onClick={() => router.push("/chats/groups")}
+                    >
+                      <Users className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Group chats</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      className={buttonClass(isRequestsActive)}
+                      aria-label="Requests"
+                      onClick={() => router.push("/chats/requests")}
+                    >
+                      <MailQuestion className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Requests</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      className={buttonClass(isFindUsersActive)}
+                      aria-label="Add friend"
+                      onClick={() => router.push("/find-users")}
+                    >
+                      <UserPlus className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Find users</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      className={buttonClass(isProfileActive)}
+                      aria-label="Profile"
+                      onClick={() => router.push("/profile")}
+                    >
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Profile</TooltipContent>
+                </Tooltip>
                 <div className="flex-1" />
-                <Button
-                  // variant="ghost"
-                  size="icon"
-                  className={buttonClass(isSettingsActive)}
-                  aria-label="Settings"
-                  onClick={() => router.push("/settings")}
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      className={buttonClass(isSettingsActive)}
+                      aria-label="Settings"
+                      onClick={() => router.push("/settings")}
+                    >
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Settings</TooltipContent>
+                </Tooltip>
               </div>
 
               <div className="flex-1 flex flex-col">

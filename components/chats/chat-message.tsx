@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { Message } from "@/lib/store/slices/chat-slice"
 
 interface ChatMessageProps {
@@ -11,6 +12,9 @@ interface ChatMessageProps {
   lockDisplayMode: "text" | "icon" | "custom"
   customLockText: string
   onMessageClick: (messageId: string) => void
+  showSenderMeta?: boolean
+  senderName?: string
+  senderAvatar?: string
 }
 
 export function ChatMessage({
@@ -19,8 +23,19 @@ export function ChatMessage({
   lockDisplayMode,
   customLockText,
   onMessageClick,
+  showSenderMeta = false,
+  senderName,
+  senderAvatar,
 }: ChatMessageProps) {
   const isMe = message.senderId === "me"
+  const shouldShowMeta = showSenderMeta && senderName
+
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
 
   const renderLockedContent = () => {
     switch (lockDisplayMode) {
@@ -43,42 +58,55 @@ export function ChatMessage({
       layout
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn("flex", isMe ? "justify-end" : "justify-start")}
+      className={cn("flex w-full", isMe ? "justify-end" : "justify-start")}
     >
-      <motion.div
-        onClick={() => onMessageClick(message.id)}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
-        className={cn(
-          "max-w-[75%] sm:max-w-[60%] rounded-2xl px-4 py-2 cursor-pointer transition-all",
-          isMe
-            ? "bg-purple-100/15 text-message-sent-foreground rounded-br-sm border border-purple-400/20"
-            : "bg-gray-800/30 text-message-received-foreground rounded-bl-sm border border-purple-400/20",
+      <div className={cn("flex gap-3", isMe ? "flex-row-reverse" : "flex-row")}>
+        {shouldShowMeta && (
+          <Avatar className="h-8 w-8 mt-1">
+            {senderAvatar ? <AvatarImage src={senderAvatar} alt={senderName} /> : null}
+            <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
+              {getInitials(senderName)}
+            </AvatarFallback>
+          </Avatar>
         )}
-      >
-        {isUnlocked ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <p className="text-sm">{message.content}</p>
-            {message.attachments && message.attachments.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {message.attachments.map((attachment, index) => (
-                  <img
-                    key={index}
-                    src={attachment || "/placeholder.svg"}
-                    alt={`Attachment ${index + 1}`}
-                    className="max-w-[200px] rounded-lg"
-                  />
-                ))}
-              </div>
+        <div className={cn("flex flex-col", isMe ? "items-end" : "items-start")}>
+          {shouldShowMeta && <p className="text-xs text-muted-foreground mb-1">{senderName}</p>}
+          <motion.div
+            onClick={() => onMessageClick(message.id)}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className={cn(
+              "max-w-[250px] md:max-w-150 rounded-2xl px-4 py-2 cursor-pointer transition-all overflow-hidde border",
+              isMe
+                ? "bg-purple-500/30 dark:bg-purple-300/10 dark:text-message-sent-foreground rounded-br-sm border-purple-400/20 "
+                : "bg-gray-800/5 dark:text-message-received-foreground rounded-bl-sm border-purple-400/20",
             )}
+          >
+            {isUnlocked ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <p className="text-sm">{message.content}</p>
+                {message.attachments && message.attachments.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {message.attachments.map((attachment, index) => (
+                      <img
+                        key={index}
+                        src={attachment || "/placeholder.svg"}
+                        alt={`Attachment ${index + 1}`}
+                        className="max-w-50 rounded-lg"
+                      />
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm">
+                {renderLockedContent()}
+              </motion.div>
+            )}
+            <p className={cn("text-xs mt-1", isUnlocked ? "opacity-60" : "opacity-40")}>{message.timestamp}</p>
           </motion.div>
-        ) : (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm">
-            {renderLockedContent()}
-          </motion.div>
-        )}
-        <p className={cn("text-xs mt-1", isUnlocked ? "opacity-60" : "opacity-40")}>{message.timestamp}</p>
-      </motion.div>
+        </div>
+      </div>
     </motion.div>
   )
 }
