@@ -4,21 +4,7 @@ import type React from "react"
 
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import {
-  ArrowLeft,
-  Moon,
-  Sun,
-  Monitor,
-  Lock,
-  Bell,
-  Volume2,
-  User,
-  Shield,
-  LogOut,
-  Camera,
-  Trash2,
-  Upload,
-} from "lucide-react"
+import { ArrowLeft, Moon, Sun, Monitor, Lock, User, Shield, LogOut, } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
@@ -26,19 +12,14 @@ import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { logoutUser } from "@/lib/store/slices/auth-slice"
 import { uploadAvatar, deleteAvatar } from "@/lib/store/slices/profile-slice"
-import {
-  setLockDisplayMode,
-  setCustomLockText,
-  toggleNotifications,
-  toggleSound,
-} from "@/lib/store/slices/settings-slice"
+import { setLockDisplayMode, setCustomLockText } from "@/lib/store/slices/settings-slice"
 import { toast } from "react-hot-toast"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -113,7 +94,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
+      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/5 backdrop-blur-xl z-10">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="cursor-pointer">
             <ArrowLeft className="h-5 w-5" />
@@ -122,6 +103,8 @@ export default function SettingsPage() {
         </div>
         <ThemeToggle />
       </header>
+           <BackgroundGradient/>
+      
 
       <main className="container mx-auto max-w-2xl px-4 py-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
@@ -139,15 +122,6 @@ export default function SettingsPage() {
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
-                  {/* <Button
-                    size="icon"
-                    variant="secondary"
-                    className="absolute bottom-0 right-0 h-7 w-7 rounded-full"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isLoading}
-                  >
-                    <Camera className="h-3.5 w-3.5" />
-                  </Button> */}
                 </div>
                 <div className="flex-1 space-y-2">
                   <p className="font-bold text-base">{currentUser.name}</p>
@@ -164,44 +138,6 @@ export default function SettingsPage() {
                 disabled={isLoading}
               />
 
-              {/* <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="gap-2"
-                  disabled={isLoading}
-                >
-                  <Camera className="h-4 w-4" />
-                  Set Picture
-                </Button>
-
-                {previewAvatar && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleUploadAvatar}
-                    className="gap-2"
-                    disabled={isLoading}
-                  >
-                    <Upload className="h-4 w-4" />
-                    Upload
-                  </Button>
-                )}
-
-                {(currentUser.avatar || previewAvatar) && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleRemoveAvatar}
-                    className="gap-2 text-destructive hover:text-destructive"
-                    disabled={isLoading}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Remove
-                  </Button>
-                )}
-              </div> */}
             </div>
           </section>
 

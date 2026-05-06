@@ -1,5 +1,4 @@
 "use client"
-import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { ArrowLeft } from "lucide-react"
@@ -7,18 +6,12 @@ import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { EditProfileForm } from "@/components/profile/edit-profile-form"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Button } from "@/components/ui/button"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function ProfilePage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { user, isAuthenticated, isInitialized } = useAppSelector((state) => state.auth)
-
-
-  useEffect(() => {
-    if (isInitialized && !isAuthenticated) {
-      router.push("/login")
-    }
-  }, [isAuthenticated, isInitialized, router])
+  const { user, isInitialized } = useAppSelector((state) => state.auth)
 
   if (!isInitialized || !user) {
     return (
@@ -37,15 +30,16 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
+      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/5 backdrop-blur-xl z-10 w-full">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="cursor-pointer">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <span className="font-semibold">My Profile</span>
+          <span className="font-semibold font-exo">My Profile</span>
         </div>
         <ThemeToggle />
       </header>
+      <BackgroundGradient />
 
       <main className="container mx-auto max-w-2xl px-4 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

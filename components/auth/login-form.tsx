@@ -41,7 +41,7 @@ export function LoginForm() {
     try {
       await dispatch(loginUser({ email, password })).unwrap()
       toast.success("Login successful!")
-      router.push("/chat")
+      router.push("/chats")
     } catch (err) {
       toast.error((err as string) || "Login failed")
     }

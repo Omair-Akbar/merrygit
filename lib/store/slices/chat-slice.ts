@@ -4,8 +4,11 @@ export interface Message {
   id: string
   content: string
   senderId: string
+  senderName?: string
+  senderAvatar?: string
   receiverId: string
   timestamp: string
+  dayLabel?: string
   isEncrypted: boolean
   isRead: boolean
   attachments?: string[]
@@ -22,6 +25,8 @@ export interface Chat {
   messages: Message[]
   isOnline: boolean
   isViewing: boolean
+  isRequest?: boolean
+  isGroup?: boolean
 }
 
 export interface UserPresence {

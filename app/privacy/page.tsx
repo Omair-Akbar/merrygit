@@ -3,18 +3,21 @@
 import { motion } from "framer-motion"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen flex flex-col">
+     <BackgroundGradient/>
+
       <Header />
 
-      <main className="flex-1 py-12">
+      <main className="flex-1 pb-12 pt-30">
         <div className="container mx-auto max-w-3xl px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
             <div>
               <h1 className="text-3xl font-bold mb-4">Privacy Policy</h1>
-              <p className="text-muted-foreground">Last updated: January 2024</p>
+              <p className="text-muted-foreground">Last updated: Feb 2025</p>
             </div>
 
             <section className="space-y-4">

@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks"
 import { changePassword } from "@/lib/store/slices/auth-slice"
 import { toast } from "react-hot-toast"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function UpdatePasswordPage() {
   const router = useRouter()
@@ -73,7 +74,7 @@ export default function UpdatePasswordPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
+      <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/5 backdrop-blur-xl z-10 w-full">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="cursor-pointer">
             <ArrowLeft className="h-5 w-5" />
@@ -82,8 +83,8 @@ export default function UpdatePasswordPage() {
         </div>
         <ThemeToggle />
       </header>
-
-      <main className="container mx-auto max-w-md px-4 py-12">
+    <BackgroundGradient/>
+      <main className="container mx-auto max-w-md px-4 py-12 ">
         <div className="space-y-6">
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">Update your password</h1>

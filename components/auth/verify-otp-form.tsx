@@ -36,7 +36,7 @@ export function VerifyOtpForm() {
     try {
       await dispatch(verifyOtp({ email: otpEmail, otp })).unwrap()
       toast.success("Email verified successfully!")
-      router.push("/chat")
+      router.push("/chats")
     } catch (err) {
       toast.error(err as string || "OTP verification failed")
     }
