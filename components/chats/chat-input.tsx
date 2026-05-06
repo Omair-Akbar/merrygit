@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { memo, useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Send, ImageIcon, Smile, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -77,7 +77,7 @@ interface ChatInputProps {
   disabled?: boolean
 }
 
-export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
+function ChatInputComponent({ onSendMessage, disabled }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [showEmoji, setShowEmoji] = useState(false)
   const [attachments, setAttachments] = useState<File[]>([])
@@ -250,3 +250,5 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     </div>
   )
 }
+
+export const ChatInput = memo(ChatInputComponent)

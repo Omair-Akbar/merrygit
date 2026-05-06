@@ -2,22 +2,23 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Search, ArrowLeft, MessageSquare } from "lucide-react"
+import { Search, ArrowLeft, Plus, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useDispatch, useSelector } from "react-redux"
-import type { AppDispatch, RootState } from "@/lib/store/store"
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { searchUserThunk, clearSearch } from "@/lib/store/slices/user-slice"
+import { createDirectChatThunk } from "@/lib/store/slices/chat-slice"
 import { BackgroundGradient } from "@/components/chats/chat-background"
 
 export default function FindUsersPage() {
   const router = useRouter()
-  const dispatch = useDispatch<AppDispatch>()
-  const { searchResults, isSearching, searchError } = useSelector((state: RootState) => state.user)
+  const dispatch = useAppDispatch()
+  const { searchResults, isSearching, searchError } = useAppSelector((state) => state.user)
+  const { isCreatingDirectChat, creatingDirectChatUserId } = useAppSelector((state) => state.chat)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [searchType, setSearchType] = useState<"email" | "username">("username")
@@ -43,7 +44,6 @@ export default function FindUsersPage() {
   }
 
   const handleSearchTypeChange = () => {
-    setSearchQuery("")
     setSearchType(searchType === "email" ? "username" : "email")
     dispatch(clearSearch())
     setHasSearched(false)
@@ -53,6 +53,17 @@ export default function FindUsersPage() {
     setSearchQuery("")
     dispatch(clearSearch())
     setHasSearched(false)
+  }
+
+  const handleCreateChat = async (otherUserId: string) => {
+    if (isCreatingDirectChat) return
+
+    try {
+      const result = await dispatch(createDirectChatThunk({ otherUserId })).unwrap()
+      router.push(`/chats?id=${result.chatId}`)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -165,10 +176,18 @@ export default function FindUsersPage() {
                   </div>
                 </Link>
                 <div className="flex gap-2">
-                  <Button variant="secondary" size="icon" asChild>
-                    <Link href={`/chat?user=${user.username}`}>
-                      <MessageSquare className="h-4 w-4" />
-                    </Link>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => handleCreateChat(user.id)}
+                    disabled={isCreatingDirectChat && creatingDirectChatUserId === user.id}
+                    aria-label="Create chat"
+                  >
+                    {isCreatingDirectChat && creatingDirectChatUserId === user.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </motion.div>

@@ -1,9 +1,10 @@
 "use client"
 
+import { memo } from "react"
 import { motion } from "framer-motion"
 import { Logo } from "@/components/ui/logo"
 
-export function ChatEmptyState() {
+function ChatEmptyStateComponent() {
   return (
     <div className="flex-1 flex items-center justify-center">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-4">
@@ -16,3 +17,5 @@ export function ChatEmptyState() {
     </div>
   )
 }
+
+export const ChatEmptyState = memo(ChatEmptyStateComponent)

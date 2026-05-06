@@ -6,7 +6,7 @@ import Link from "next/link"
 import { AnimatePresence } from "framer-motion"
 import { ArrowLeft, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
 import { ChatInput } from "@/components/chats/chat-input"
 import { ChatMessage } from "@/components/chats/chat-message"
@@ -44,6 +44,17 @@ export function ChatPanel({
   const isRequestMode = mode === "request"
   let lastDayLabel: string | null = null
 
+  const emailValue = chat.participantEmail || "Not available"
+  const phoneValue = chat.participantPhoneNumber
+    ? chat.participantPhoneVisibility === "only_me"
+      ? "Hidden"
+      : chat.participantPhoneNumber
+    : "Not available"
+  const lastSeenValue = chat.participantLastSeen
+    ? new Date(chat.participantLastSeen).toLocaleString()
+    : "Unknown"
+  const timezoneValue = chat.participantTimezone || "Unknown"
+
   return (
     <>
       <div className="h-16 border-b border-border flex items-center px-4">
@@ -53,6 +64,9 @@ export function ChatPanel({
         <Link href={`/user/${chat.participantUsername}`} className="flex items-center gap-3 flex-1">
           <div className="relative">
             <Avatar className="h-10 w-10">
+              {chat.participantAvatar ? (
+                <AvatarImage src={chat.participantAvatar} alt={chat.participantName} />
+              ) : null}
               <AvatarFallback className="bg-secondary text-secondary-foreground">
                 {chat.participantName
                   .split(" ")
@@ -80,49 +94,78 @@ export function ChatPanel({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        <AnimatePresence mode="popLayout">
-          {chat.messages.map((msg, index) => {
-            const dayLabel = msg.dayLabel || null
-            const isNewDay = dayLabel && dayLabel !== lastDayLabel
-            if (isNewDay) {
-              lastDayLabel = dayLabel
-            }
+      {isRequestMode ? (
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="rounded-xl border border-border bg-background/60 p-5">
+            <h3 className="text-sm font-semibold">User details</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              Review the request details before accepting or rejecting.
+            </p>
+            <div className="mt-4 grid gap-3 text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-muted-foreground">Email</span>
+                <span className="truncate max-w-[60%] text-right">{emailValue}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-muted-foreground">Phone</span>
+                <span className="truncate max-w-[60%] text-right">{phoneValue}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-muted-foreground">Timezone</span>
+                <span className="truncate max-w-[60%] text-right">{timezoneValue}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-muted-foreground">Last seen</span>
+                <span className="truncate max-w-[60%] text-right">{lastSeenValue}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <AnimatePresence mode="popLayout">
+            {chat.messages.map((msg, index) => {
+              const dayLabel = msg.dayLabel || null
+              const isNewDay = dayLabel && dayLabel !== lastDayLabel
+              if (isNewDay) {
+                lastDayLabel = dayLabel
+              }
 
-            const previousMessage = chat.messages[index - 1]
-            const isNewSender =
-              !previousMessage ||
-              previousMessage.senderId !== msg.senderId ||
-              (previousMessage.dayLabel || null) !== dayLabel
+              const previousMessage = chat.messages[index - 1]
+              const isNewSender =
+                !previousMessage ||
+                previousMessage.senderId !== msg.senderId ||
+                (previousMessage.dayLabel || null) !== dayLabel
 
-            const shouldShowGroupMeta = Boolean(chat.isGroup && isNewSender)
-            const senderName = msg.senderName || (msg.senderId === "me" ? "You" : "Unknown")
+              const shouldShowGroupMeta = Boolean(chat.isGroup && isNewSender)
+              const senderName = msg.senderName || (msg.senderId === "me" ? "You" : "Unknown")
 
-            return (
-              <Fragment key={msg.id}>
-                {isNewDay && (
-                  <div className="flex items-center gap-3 py-2">
-                    <div className="h-px flex-1 bg-border" />
-                    <span className="text-xs text-muted-foreground font-medium">{dayLabel}</span>
-                    <div className="h-px flex-1 bg-border" />
-                  </div>
-                )}
-                <ChatMessage
-                  message={msg}
-                  isUnlocked={unlockedMessageId === msg.id}
-                  lockDisplayMode={lockDisplayMode}
-                  customLockText={customLockText}
-                  onMessageClick={onMessageClick}
-                  showSenderMeta={shouldShowGroupMeta}
-                  senderName={shouldShowGroupMeta ? senderName : undefined}
-                  senderAvatar={shouldShowGroupMeta ? msg.senderAvatar : undefined}
-                />
-              </Fragment>
-            )
-          })}
-        </AnimatePresence>
-        <div ref={messagesEndRef} />
-      </div>
+              return (
+                <Fragment key={msg.id}>
+                  {isNewDay && (
+                    <div className="flex items-center gap-3 py-2">
+                      <div className="h-px flex-1 bg-border" />
+                      <span className="text-xs text-muted-foreground font-medium">{dayLabel}</span>
+                      <div className="h-px flex-1 bg-border" />
+                    </div>
+                  )}
+                  <ChatMessage
+                    message={msg}
+                    isUnlocked={unlockedMessageId === msg.id}
+                    lockDisplayMode={lockDisplayMode}
+                    customLockText={customLockText}
+                    onMessageClick={onMessageClick}
+                    showSenderMeta={shouldShowGroupMeta}
+                    senderName={shouldShowGroupMeta ? senderName : undefined}
+                    senderAvatar={shouldShowGroupMeta ? msg.senderAvatar : undefined}
+                  />
+                </Fragment>
+              )
+            })}
+          </AnimatePresence>
+          <div ref={messagesEndRef} />
+        </div>
+      )}
 
       {isRequestMode ? (
         <div className="border-t border-border p-4 flex items-center gap-3">
