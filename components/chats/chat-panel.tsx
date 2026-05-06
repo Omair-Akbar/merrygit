@@ -6,7 +6,7 @@ import Link from "next/link"
 import { AnimatePresence } from "framer-motion"
 import { ArrowLeft, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
 import { ChatInput } from "@/components/chats/chat-input"
 import { ChatMessage } from "@/components/chats/chat-message"
@@ -53,6 +53,9 @@ export function ChatPanel({
         <Link href={`/user/${chat.participantUsername}`} className="flex items-center gap-3 flex-1">
           <div className="relative">
             <Avatar className="h-10 w-10">
+              {chat.participantAvatar ? (
+                <AvatarImage src={chat.participantAvatar} alt={chat.participantName} />
+              ) : null}
               <AvatarFallback className="bg-secondary text-secondary-foreground">
                 {chat.participantName
                   .split(" ")
