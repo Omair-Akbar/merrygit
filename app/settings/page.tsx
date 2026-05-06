@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { SidebarNav } from "@/components/chats/sidebar/sidebar-nav"
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
 import { logoutUser } from "@/lib/store/slices/auth-slice"
 import { uploadAvatar, deleteAvatar } from "@/lib/store/slices/profile-slice"
@@ -90,9 +91,10 @@ export default function SettingsPage() {
   }
 
   const displayAvatar = previewAvatar || currentUser.avatar
+  const handleNavigate = (path: string) => router.push(path)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       {/* Header */}
       <header className="h-14 border-b border-border flex items-center justify-between px-4 sticky top-0 bg-background/5 backdrop-blur-xl z-10">
         <div className="flex items-center gap-2">
@@ -103,11 +105,22 @@ export default function SettingsPage() {
         </div>
         <ThemeToggle />
       </header>
-           <BackgroundGradient/>
-      
 
-      <main className="container mx-auto max-w-2xl px-4 py-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+      <BackgroundGradient />
+      <div className="flex min-h-[calc(100vh-3.5rem)]">
+        <div className="hidden md:flex sticky top-14 h-[calc(100vh-3.5rem)] self-start">
+          <SidebarNav
+            isDirectActive={false}
+            isGroupActive={false}
+            isRequestsActive={false}
+            isFindUsersActive={false}
+            isSettingsActive
+            onNavigate={handleNavigate}
+            user={user}
+          />
+        </div>
+        <main className="flex-1 container mx-auto max-w-2xl px-4 py-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
           <section className="space-y-4">
             <h2 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Profile Picture</h2>
             <div className="p-4 rounded-lg border border-border ">
@@ -307,7 +320,8 @@ export default function SettingsPage() {
             Log out
           </Button>
         </motion.div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

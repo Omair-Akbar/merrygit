@@ -2,15 +2,15 @@
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { ArrowLeft } from "lucide-react"
-import { useAppSelector, useAppDispatch } from "@/lib/store/hooks"
+import { useAppSelector } from "@/lib/store/hooks"
 import { EditProfileForm } from "@/components/profile/edit-profile-form"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { BackgroundGradient } from "@/components/chats/chat-background"
+import { SidebarNav } from "@/components/chats/sidebar/sidebar-nav"
 
 export default function ProfilePage() {
   const router = useRouter()
-  const dispatch = useAppDispatch()
   const { user, isInitialized } = useAppSelector((state) => state.auth)
 
   if (!isInitialized || !user) {
@@ -41,11 +41,24 @@ export default function ProfilePage() {
       </header>
       <BackgroundGradient />
 
-      <main className="container mx-auto max-w-2xl px-4 py-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <EditProfileForm />
-        </motion.div>
-      </main>
+      <div className="flex min-h-[calc(100vh-3.5rem)]">
+        <div className="hidden md:flex">
+          <SidebarNav
+            isDirectActive={false}
+            isGroupActive={false}
+            isRequestsActive={false}
+            isFindUsersActive={false}
+            isSettingsActive={false}
+            onNavigate={(path) => router.push(path)}
+            user={user}
+          />
+        </div>
+        <main className="flex-1 container mx-auto max-w-2xl px-4 py-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <EditProfileForm />
+          </motion.div>
+        </main>
+      </div>
     </div>
   )
 }

@@ -116,7 +116,7 @@ export function SidebarNav({
           <Button
             size="icon"
             className={cn(
-              "mt-2 h-12 w-12 rounded-full bg-transparent p-0 text-foreground hover:bg-accent/50",
+              "mt-2 h-12 w-12 rounded-full bg-transparent p-0 text-foreground hover:bg-accent/50 m-2",
               "border border-transparent hover:border-border",
             )}
             aria-label="Profile"
