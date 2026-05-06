@@ -44,7 +44,7 @@ export function SidebarNav({
   const initials = getInitials(user?.name, user?.username)
 
   return (
-    <div className="mx-1 w-16 shrink-0 border-r border-border/60 bg-background/70 backdrop-blur-sm flex flex-col py-4">
+    <div className="w-16 shrink-0 border-r border-border/60 bg-background/70 backdrop-blur-sm flex flex-col py-4">
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -116,7 +116,7 @@ export function SidebarNav({
           <Button
             size="icon"
             className={cn(
-              "mt-2 h-12 w-12 rounded-full bg-transparent p-0 text-foreground hover:bg-accent/50 mx-1",
+              "mt-2 h-12 w-12 rounded-full bg-transparent p-0 text-foreground hover:bg-accent/50",
               "border border-transparent hover:border-border",
             )}
             aria-label="Profile"

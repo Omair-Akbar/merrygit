@@ -84,6 +84,54 @@ export interface DirectMessagesResponse {
   }
 }
 
+export interface DirectChatRequestsResponse {
+  message: string
+  data: {
+    requests: Array<{
+      _id: string
+      sender: {
+        _id: string
+        name: string
+        username: string
+        email: string
+        phoneNumber: string
+        phoneVisibility: string
+        avatar: string | null
+        lastSeen: string
+        timezone: string
+        createdAt: string
+        updatedAt: string
+      }
+      createdAt: string
+    }>
+    totalCount: number
+  }
+}
+
+export interface RespondDirectChatInvitationResponse {
+  message: string
+  chat: {
+    _id: string
+    status: string
+    createdAt?: string
+    updatedAt: string
+    participants?: string[]
+    otherUser?: {
+      _id: string
+      name: string
+      username: string
+      email: string
+      phoneNumber: string
+      phoneVisibility: string
+      avatar: string | null
+      lastSeen: string
+      timezone: string
+      createdAt: string
+      updatedAt: string
+    }
+  }
+}
+
 export interface SendDirectMessageRequest {
   chatId: string
   text: string
@@ -129,6 +177,22 @@ export const getDirectChats = async (): Promise<DirectChatsResponse> => {
 
 export const getDirectMessages = async (chatId: string): Promise<DirectMessagesResponse> => {
   const response = await chatApiInstance.get<DirectMessagesResponse>(`/chat/direct/${chatId}/messages`)
+  return response.data
+}
+
+export const getDirectChatRequests = async (): Promise<DirectChatRequestsResponse> => {
+  const response = await chatApiInstance.get<DirectChatRequestsResponse>("/chat/direct/requests")
+  return response.data
+}
+
+export const respondDirectChatInvitation = async (
+  chatId: string,
+  action: "accept" | "reject",
+): Promise<RespondDirectChatInvitationResponse> => {
+  const response = await chatApiInstance.post<RespondDirectChatInvitationResponse>(
+    `/chat/direct/${chatId}/invitation`,
+    { action },
+  )
   return response.data
 }
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { motion } from "framer-motion"
 import { Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -17,7 +18,7 @@ interface ChatMessageProps {
   senderAvatar?: string
 }
 
-export function ChatMessage({
+function ChatMessageComponent({
   message,
   isUnlocked,
   lockDisplayMode,
@@ -110,3 +111,5 @@ export function ChatMessage({
     </motion.div>
   )
 }
+
+export const ChatMessage = memo(ChatMessageComponent)

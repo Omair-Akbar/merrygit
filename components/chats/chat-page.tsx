@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks"
 import {
-  acceptChatRequest,
+  fetchDirectChatRequestsThunk,
   fetchDirectChatsThunk,
   fetchDirectMessagesThunk,
-  rejectChatRequest,
+  respondDirectChatRequestThunk,
   sendDirectMessageThunk,
   setActiveChat,
   setActiveChatId,
@@ -34,6 +34,9 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     userPresence,
     hasLoadedDirectChats,
     isLoadingChats,
+    hasLoadedDirectRequests,
+    isLoadingRequests,
+    isRespondingToRequestByChatId,
     loadedMessagesByChatId,
     isLoadingMessagesByChatId,
   } = useAppSelector((state) => state.chat)
@@ -46,10 +49,17 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const chatIdParam = searchParams.get("id")
 
   useEffect(() => {
+    if (view !== "messages") return
     if (chatType !== "direct") return
     if (hasLoadedDirectChats || isLoadingChats) return
     dispatch(fetchDirectChatsThunk())
-  }, [chatType, hasLoadedDirectChats, isLoadingChats, dispatch])
+  }, [view, chatType, hasLoadedDirectChats, isLoadingChats, dispatch])
+
+  useEffect(() => {
+    if (view !== "requests") return
+    if (hasLoadedDirectRequests || isLoadingRequests) return
+    dispatch(fetchDirectChatRequestsThunk())
+  }, [view, hasLoadedDirectRequests, isLoadingRequests, dispatch])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -57,9 +67,20 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
   useEffect(() => {
     if (!chatIdParam || chats.length === 0) return
+    const matchedChat = chats.find((chat) => chat.id === chatIdParam)
+    if (!matchedChat) return
+
+    const isRequest = matchedChat.isRequest || false
+    const isGroup = matchedChat.isGroup || false
+
+    if (view === "requests" && !isRequest) return
+    if (view === "messages" && isRequest) return
+    if (view === "messages" && chatType === "group" && !isGroup) return
+    if (view === "messages" && chatType === "direct" && isGroup) return
     if (activeChat?.id === chatIdParam) return
+
     dispatch(setActiveChatId(chatIdParam))
-  }, [chatIdParam, chats, activeChat?.id, dispatch])
+  }, [chatIdParam, chats, activeChat?.id, view, chatType, dispatch])
 
   useEffect(() => {
     if (!activeChat) return
@@ -87,11 +108,21 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   }, [activeChat, view, chatType, dispatch])
 
   useEffect(() => {
-    if (!activeChat || chatType !== "direct") return
+    if (!activeChat || chatType !== "direct" || view !== "messages") return
     if (loadedMessagesByChatId[activeChat.id]) return
     if (isLoadingMessagesByChatId[activeChat.id]) return
     dispatch(fetchDirectMessagesThunk({ chatId: activeChat.id }))
-  }, [activeChat, chatType, loadedMessagesByChatId, isLoadingMessagesByChatId, dispatch])
+  }, [activeChat, chatType, view, loadedMessagesByChatId, isLoadingMessagesByChatId, dispatch])
+
+  const sortedChats = useMemo(() => {
+    const getSortTimestamp = (chat: (typeof chats)[number]) => {
+      if (!chat.lastMessageAt) return 0
+      const time = Date.parse(chat.lastMessageAt)
+      return Number.isNaN(time) ? 0 : time
+    }
+
+    return [...chats].sort((a, b) => getSortTimestamp(b) - getSortTimestamp(a))
+  }, [chats])
 
   const handleSendMessage = (content: string, _attachments?: File[]) => {
     if (!activeChat || !content.trim()) return
@@ -104,18 +135,35 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
   const handleSelectChat = (chat: (typeof chats)[number]) => {
     dispatch(setActiveChat(chat))
-    router.push(`/chats?id=${chat.id}`)
+    const nextPath = view === "requests" ? `/chats/requests?id=${chat.id}` : `/chats?id=${chat.id}`
+    router.push(nextPath)
   }
 
-  const handleAcceptRequest = () => {
+  const handleAcceptRequest = async () => {
     if (!activeChat) return
-    dispatch(acceptChatRequest(activeChat.id))
-    router.push("/chats")
+    if (isRespondingToRequestByChatId[activeChat.id]) return
+
+    try {
+      const result = await dispatch(
+        respondDirectChatRequestThunk({ chatId: activeChat.id, action: "accept" }),
+      ).unwrap()
+      router.push(`/chats?id=${result.chat._id}`)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  const handleRejectRequest = () => {
+  const handleRejectRequest = async () => {
     if (!activeChat) return
-    dispatch(rejectChatRequest(activeChat.id))
+    if (isRespondingToRequestByChatId[activeChat.id]) return
+
+    try {
+      await dispatch(
+        respondDirectChatRequestThunk({ chatId: activeChat.id, action: "reject" }),
+      ).unwrap()
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const getActiveUserPresence = () => {
@@ -137,7 +185,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
       <div className="flex-1 flex min-h-0 overflow-hidden relative">
         <ChatSidebar
-          chats={chats}
+          chats={sortedChats}
           activeChat={activeChat}
           onSelectChat={handleSelectChat}
           isOpen={isSidebarOpen}
