@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 
 export function BackgroundGradient() {
   return (
-    <div className="absolute h-[80vh] inset-0 z-0 pointer-events-none w-72 md:w-375">
+    <div className="absolute inset-0 z-0 pointer-events-none w-full h-full overflow-hidden">
       <motion.div
         animate={{
           scale: [1, 1.2, 0.9, 1.1, 1],

@@ -179,7 +179,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const activePresence = getActiveUserPresence()
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen max-w-screen flex flex-col bg-background">
       <ChatHeader />
       <BackgroundGradient />
 
