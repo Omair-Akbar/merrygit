@@ -110,7 +110,7 @@ export function ChatSidebar({
               />
 
               <div className="flex-1 flex flex-col">
-                <SidebarHeader view={view} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+                <SidebarHeader view={view} chatType={chatType} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
                 <div className="flex-1 relative overflow-hidden">
                   <SidebarChatList

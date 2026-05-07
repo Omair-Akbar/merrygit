@@ -42,6 +42,7 @@ export interface Chat {
   isViewing: boolean
   isRequest?: boolean
   isGroup?: boolean
+  status?: "pending" | "active" | "blocked"
 }
 
 export interface UserPresence {
@@ -102,11 +103,37 @@ const initialState: ChatState = {
 
 export const createDirectChatThunk = createAsyncThunk(
   "chat/createDirectChat",
-  async ({ otherUserId }: { otherUserId: string }, { rejectWithValue }) => {
+  async (
+    {
+      otherUserId,
+      otherUser,
+    }: {
+      otherUserId: string
+      otherUser?: {
+        id: string
+        name: string
+        username: string
+        email: string
+        avatar?: string | null
+      }
+    },
+    { rejectWithValue, getState },
+  ) => {
     try {
       const response = await createDirectChat(otherUserId)
+      const state = getState() as RootState
+      const currentUser = state.auth.user
+
       return {
         chatId: response.chat._id,
+        status: response.chat.status as "pending" | "active" | "blocked",
+        createdAt: response.chat.createdAt,
+        updatedAt: response.chat.updatedAt,
+        participants: response.chat.participants,
+        currentUserId: currentUser?._id || null,
+        otherUser:
+          otherUser ||
+          null,
       }
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to create chat")
@@ -199,6 +226,26 @@ const formatMessageDayLabel = (isoDate: string) =>
 const getLatestMessageCreatedAt = (messages: Array<{ createdAt: string }>) => {
   if (messages.length === 0) return undefined
   return messages[messages.length - 1].createdAt
+}
+
+const getChatSortTime = (chat: Chat) => {
+  const candidate = chat.lastMessageAt || chat.messages[chat.messages.length - 1]?.timestamp
+  if (!candidate) return 0
+  const parsedTime = Date.parse(candidate)
+  return Number.isNaN(parsedTime) ? 0 : parsedTime
+}
+
+const upsertDirectChat = (state: ChatState, chat: Chat) => {
+  const existingIndex = state.chats.findIndex((item) => item.id === chat.id)
+  if (existingIndex >= 0) {
+    state.chats[existingIndex] = {
+      ...state.chats[existingIndex],
+      ...chat,
+    }
+    return
+  }
+
+  state.chats = [...state.chats, chat].sort((a, b) => getChatSortTime(b) - getChatSortTime(a))
 }
 
 const chatSlice = createSlice({
@@ -309,11 +356,74 @@ const chatSlice = createSlice({
         state.creatingDirectChatUserId = action.meta.arg.otherUserId
         state.createChatError = null
         state.lastCreatedChatId = null
+
+        const pendingUser = action.meta.arg.otherUser
+        if (!pendingUser) return
+
+        const existingChat = state.chats.find((chat) => chat.participantId === pendingUser.id)
+        if (existingChat) {
+          return
+        }
+
+        upsertDirectChat(state, {
+          id: `pending-${pendingUser.id}`,
+          participantId: pendingUser.id,
+          participantName: pendingUser.name,
+          participantUsername: pendingUser.username,
+          participantAvatar: pendingUser.avatar || undefined,
+          participantEmail: pendingUser.email,
+          unreadCount: 0,
+          messages: [],
+          isOnline: false,
+          isViewing: false,
+          isRequest: false,
+          isGroup: false,
+          status: "pending",
+          lastMessageAt: new Date().toISOString(),
+        })
       })
       .addCase(createDirectChatThunk.fulfilled, (state, action) => {
         state.isCreatingDirectChat = false
         state.creatingDirectChatUserId = null
         state.createChatError = null
+
+        const pendingUser = action.payload.otherUser
+        const existingChatIndex = state.chats.findIndex(
+          (chat) =>
+            chat.id === action.payload.chatId ||
+            (pendingUser ? chat.participantId === pendingUser.id : false),
+        )
+
+        if (existingChatIndex >= 0) {
+          const existingChat = state.chats[existingChatIndex]
+          state.chats[existingChatIndex] = {
+            ...existingChat,
+            id: action.payload.chatId,
+            status: action.payload.status,
+            isRequest: false,
+            isGroup: false,
+            lastMessageAt: action.payload.updatedAt || action.payload.createdAt,
+          }
+          state.chats = state.chats.sort((a, b) => getChatSortTime(b) - getChatSortTime(a))
+        } else if (pendingUser) {
+          upsertDirectChat(state, {
+            id: action.payload.chatId,
+            participantId: pendingUser.id,
+            participantName: pendingUser.name,
+            participantUsername: pendingUser.username,
+            participantAvatar: pendingUser.avatar || undefined,
+            participantEmail: pendingUser.email,
+            unreadCount: 0,
+            messages: [],
+            isOnline: false,
+            isViewing: false,
+            isRequest: false,
+            isGroup: false,
+            status: action.payload.status,
+            lastMessageAt: action.payload.updatedAt || action.payload.createdAt,
+          })
+        }
+
         state.lastCreatedChatId = action.payload.chatId
       })
       .addCase(createDirectChatThunk.rejected, (state, action) => {
@@ -321,6 +431,12 @@ const chatSlice = createSlice({
         state.creatingDirectChatUserId = null
         state.createChatError = action.payload as string
         state.lastCreatedChatId = null
+
+        const pendingUserId = action.meta.arg.otherUser?.id
+        if (!pendingUserId) return
+
+        const pendingChatId = `pending-${pendingUserId}`
+        state.chats = state.chats.filter((chat) => chat.id !== pendingChatId)
       })
       .addCase(fetchDirectChatsThunk.pending, (state) => {
         state.isLoadingChats = true
@@ -346,6 +462,7 @@ const chatSlice = createSlice({
             isViewing: existing?.isViewing ?? false,
             isGroup: false,
             isRequest: false,
+            status: chat.status as "pending" | "active" | "blocked",
             messages: existing?.messages ?? [],
             lastMessage: existing?.lastMessage,
             lastMessageAt: existing?.lastMessageAt || chat.updatedAt,
@@ -389,6 +506,7 @@ const chatSlice = createSlice({
             isViewing: existing?.isViewing ?? false,
             isGroup: false,
             isRequest: true,
+            status: "pending",
             messages: existing?.messages ?? [],
             lastMessage: existing?.lastMessage,
             lastMessageAt: existing?.lastMessageAt || request.createdAt,

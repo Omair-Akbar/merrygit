@@ -14,6 +14,7 @@ import { searchUserThunk, clearSearch } from "@/lib/store/slices/user-slice"
 import { createDirectChatThunk } from "@/lib/store/slices/chat-slice"
 import { BackgroundGradient } from "@/components/chats/chat-background"
 import { SidebarNav } from "@/components/chats/sidebar/sidebar-nav"
+import { toast } from "react-hot-toast"
 
 export default function FindUsersPage() {
   const router = useRouter()
@@ -21,6 +22,7 @@ export default function FindUsersPage() {
   const { searchResults, isSearching, searchError } = useAppSelector((state) => state.user)
   const { isCreatingDirectChat, creatingDirectChatUserId } = useAppSelector((state) => state.chat)
   const { user } = useAppSelector((state) => state.auth)
+  const { chats } = useAppSelector((state) => state.chat)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [searchType, setSearchType] = useState<"email" | "username">("username")
@@ -60,11 +62,39 @@ export default function FindUsersPage() {
   const handleCreateChat = async (otherUserId: string) => {
     if (isCreatingDirectChat) return
 
+    const existingChat = chats.find((chat) => chat.participantId === otherUserId && !chat.isGroup)
+    if (existingChat) {
+      const message = existingChat.status === "pending" ? "Request already sent" : "Direct chat already exists"
+      toast(message)
+      router.push(`/chats?id=${existingChat.id}`)
+      return
+    }
+
     try {
-      const result = await dispatch(createDirectChatThunk({ otherUserId })).unwrap()
+      const selectedUser = (Array.isArray(searchResults) ? searchResults : [searchResults]).find(
+        (item) => item?.id === otherUserId,
+      )
+
+      const result = await dispatch(
+        createDirectChatThunk({
+          otherUserId,
+          otherUser: selectedUser
+            ? {
+                id: selectedUser.id,
+                name: selectedUser.name,
+                username: selectedUser.username,
+                email: selectedUser.email,
+                avatar: selectedUser.avatar,
+              }
+            : undefined,
+        }),
+      ).unwrap()
+
+      toast(result.status === "pending" ? "Request sent" : "Chat opened")
       router.push(`/chats?id=${result.chatId}`)
     } catch (error) {
-      console.error(error)
+      const message = typeof error === "string" ? error : "Failed to start chat"
+      toast.error(message)
     }
   }
 
@@ -145,7 +175,7 @@ export default function FindUsersPage() {
             {!hasSearched ? (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
                 <Search className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-                <p className="text-muted-foreground">Enter a {searchType} to search for users</p>
+                <p className="text-muted-foreground">Enter exact {searchType} to search for users</p>
               </motion.div>
             ) : isSearching ? (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
