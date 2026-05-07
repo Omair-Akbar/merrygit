@@ -18,7 +18,7 @@ interface ChatPanelProps {
   lockDisplayMode: "text" | "icon" | "custom"
   customLockText: string
   activePresence: { isOnline: boolean; isViewing: boolean }
-  messagesEndRef: RefObject<HTMLDivElement>
+  messagesEndRef: RefObject<HTMLDivElement | null>
   onMessageClick: (messageId: string) => void
   onSendMessage: (content: string, attachments?: File[]) => void
   onBack: () => void
