@@ -17,11 +17,13 @@ import {
 import { clearSearch, searchUserThunk, type UserProfile } from "@/lib/store/slices/user-slice"
 import {
   createGroupThunk,
+  getGroupsThunk,
   uploadGroupAvatarThunk,
   inviteGroupMemberThunk,
   clearCreatingGroup,
   clearErrors,
 } from "@/lib/store/slices/group-slice"
+import type { GroupWithDetails } from "@/lib/api/group-api"
 import { ChatSidebar } from "@/components/chats/chat-sidebar"
 import { ChatHeader } from "@/components/chats/chat-header"
 import { ChatEmptyState } from "@/components/chats/chat-empty-state"
@@ -71,9 +73,13 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   } = useAppSelector((state) => state.chat)
   const { lockDisplayMode, customLockText } = useAppSelector((state) => state.settings)
   const { searchResults, isSearching, searchError } = useAppSelector((state) => state.user)
-  const { creatingGroup, isLoadingCreate, isLoadingUploadAvatar, isLoadingInviteMember } = useAppSelector(
-    (state) => state.group,
-  )
+  const {
+    creatingGroup,
+    groups,
+    isLoadingCreate,
+    isLoadingUploadAvatar,
+    isLoadingInviteMember,
+  } = useAppSelector((state) => state.group)
   const currentUser = useAppSelector((state) => state.auth.user)
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -96,12 +102,14 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const [invitedMemberIds, setInvitedMemberIds] = useState<string[]>([])
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const hasFetchedGroups = useRef(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const chatIdParam = searchParams.get("id")
   const isGroupView = view === "messages" && chatType === "group"
   const isActiveGroupChat = activeChat?.isGroup || false
 
+  // Fetch direct chats
   useEffect(() => {
     if (view !== "messages") return
     if (chatType !== "direct") return
@@ -109,19 +117,38 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     dispatch(fetchDirectChatsThunk())
   }, [view, chatType, hasLoadedDirectChats, isLoadingChats, dispatch])
 
+  // Fetch direct requests
   useEffect(() => {
     if (view !== "requests") return
     if (hasLoadedDirectRequests || isLoadingRequests) return
     dispatch(fetchDirectChatRequestsThunk())
   }, [view, hasLoadedDirectRequests, isLoadingRequests, dispatch])
 
+  // Fetch groups when on group view - only once
+  useEffect(() => {
+    if (!isGroupView) return
+    if (hasFetchedGroups.current) return
+    hasFetchedGroups.current = true
+    dispatch(getGroupsThunk())
+  }, [isGroupView, dispatch])
+
+  // Reset fetch flag when leaving group view
+  useEffect(() => {
+    if (!isGroupView) {
+      hasFetchedGroups.current = false
+    }
+  }, [isGroupView])
+
+  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [activeChat?.messages])
 
+  // Handle chatId from URL params
   useEffect(() => {
-    if (!chatIdParam || chats.length === 0) return
-    const matchedChat = chats.find((chat) => chat.id === chatIdParam)
+    if (!chatIdParam || chats.length === 0 && groupChats.length === 0) return
+    const allChats = chatType === "group" ? groupChats : chats
+    const matchedChat = allChats.find((chat) => chat.id === chatIdParam)
     if (!matchedChat) return
 
     const isRequest = matchedChat.isRequest || false
@@ -136,6 +163,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     dispatch(setActiveChatId(chatIdParam))
   }, [chatIdParam, chats, activeChat?.id, view, chatType, dispatch])
 
+  // Validate active chat against current view
   useEffect(() => {
     if (!activeChat) return
     const isRequest = activeChat.isRequest || false
@@ -161,6 +189,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     }
   }, [activeChat, view, chatType, dispatch])
 
+  // Fetch messages for active direct chat
   useEffect(() => {
     if (!activeChat || chatType !== "direct" || view !== "messages") return
     if (loadedMessagesByChatId[activeChat.id]) return
@@ -168,15 +197,45 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     dispatch(fetchDirectMessagesThunk({ chatId: activeChat.id }))
   }, [activeChat, chatType, view, loadedMessagesByChatId, isLoadingMessagesByChatId, dispatch])
 
+  // Convert groups from API to chat format
+  const groupChats = useMemo(() => {
+    return groups.map((group: GroupWithDetails) => ({
+      id: group._id,
+      participantId: group._id,
+      participantName: group.name,
+      participantUsername: group.description || "",
+      participantAvatar: group.avatar || undefined,
+      unreadCount: group.unread ? 1 : 0,
+      isOnline: false,
+      isViewing: false,
+      isGroup: true,
+      isRequest: false,
+      messages: [],
+      lastMessageAt: group.updatedAt || group.createdAt,
+      _id: group._id,
+      name: group.name,
+      description: group.description,
+      avatar: group.avatar,
+      createdAt: group.createdAt,
+      updatedAt: group.updatedAt,
+      settings: group.settings,
+      members: group.members,
+      userRole: group.userRole,
+      memberCount: group.memberCount,
+    }))
+  }, [groups])
+
   const sortedChats = useMemo(() => {
-    const getSortTimestamp = (chat: (typeof chats)[number]) => {
-      if (!chat.lastMessageAt) return 0
-      const time = Date.parse(chat.lastMessageAt)
+    const allChats = chatType === "group" ? groupChats : chats
+
+    const getSortTimestamp = (chat: any) => {
+      if (!chat.lastMessageAt && !chat.createdAt) return 0
+      const time = Date.parse(chat.lastMessageAt || chat.createdAt)
       return Number.isNaN(time) ? 0 : time
     }
 
-    return [...chats].sort((a, b) => getSortTimestamp(b) - getSortTimestamp(a))
-  }, [chats])
+    return [...allChats].sort((a, b) => getSortTimestamp(b) - getSortTimestamp(a))
+  }, [chats, groupChats, chatType])
 
   const exactMatches = useMemo(() => {
     const query = memberSearchQuery.trim().toLowerCase()
@@ -316,6 +375,9 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const handleFinishGroupCreation = () => {
     toast.success("Group created successfully!")
     handleCloseGroupCreate()
+    // Reset the fetch flag so groups are refreshed
+    hasFetchedGroups.current = false
+    dispatch(getGroupsThunk())
   }
 
   const handleMemberSearchTypeChange = (type: "email" | "username") => {
@@ -335,10 +397,15 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     dispatch(unlockMessage(messageId))
   }
 
-  const handleSelectChat = (chat: (typeof chats)[number]) => {
+  const handleSelectChat = (chat: any) => {
     dispatch(setActiveChat(chat))
-    const nextPath = view === "requests" ? `/chats/requests?id=${chat.id}` : `/chats?id=${chat.id}`
-    router.push(nextPath)
+    if (chat.isGroup) {
+      router.push(`/chats/groups?id=${chat.id}`)
+    } else if (view === "requests") {
+      router.push(`/chats/requests?id=${chat.id}`)
+    } else {
+      router.push(`/chats?id=${chat.id}`)
+    }
   }
 
   const handleAcceptRequest = async () => {
@@ -382,11 +449,11 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const headerAction = isGroupView ? (
     <Button
       size="sm"
-      variant={isGroupCreateOpen ? "secondary" : "default"}
+      variant="secondary"
       onClick={isGroupCreateOpen ? handleCloseGroupCreate : handleOpenGroupCreate}
-      className="gap-2"
+      className="gap-2 dark:bg-white text-black"
     >
-      <Users className="h-4 w-4" />
+      <Users className="h-4 w-4 " />
       {isGroupCreateOpen ? "Close" : "Create group"}
     </Button>
   ) : undefined
@@ -462,7 +529,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
               )}
             </>
           ) : activeChat && isActiveGroupChat ? (
-            <GroupDetails group={activeChat as any} onBack={() => setActiveChat(null)} />
+            <GroupDetails group={activeChat as any} onBack={() => dispatch(setActiveChat(null))} />
           ) : activeChat ? (
             <ChatPanel
               chat={activeChat}
@@ -473,7 +540,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
               messagesEndRef={messagesEndRef}
               onMessageClick={handleMessageClick}
               onSendMessage={handleSendMessage}
-              onBack={() => setActiveChat(null)}
+              onBack={() => dispatch(setActiveChat(null))}
               mode={view === "requests" ? "request" : "chat"}
               onAcceptRequest={handleAcceptRequest}
               onRejectRequest={handleRejectRequest}

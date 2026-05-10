@@ -36,7 +36,7 @@ export function GroupDetailsForm({
       <div className="mx-auto w-full max-w-2xl px-6 py-6 space-y-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Create group</h2>
+            <h2 className="text-xl font-semibold pb-2">Create group</h2>
             <p className="text-sm text-muted-foreground">Add details and settings for your group.</p>
           </div>
           <Button variant="ghost" size="sm" onClick={onCancel} className="gap-2">
@@ -65,6 +65,7 @@ export function GroupDetailsForm({
               onChange={(e) => onDescriptionChange(e.target.value)}
               placeholder="This is a group for personal discussion"
               disabled={isLoading}
+              className="max-h-75 overflow-scroll "
             />
           </div>
 

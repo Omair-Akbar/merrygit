@@ -1,4 +1,17 @@
 import apiInstance from "./axios-instance"
+import axios from "axios"
+
+// Create a separate instance for chat API to avoid circular dependency
+const CHAT_API_BASE_URL =
+  process.env.NEXT_PUBLIC_CHAT_API_BASE_URL || "http://localhost:5002/api/v1"
+
+const chatApiInstance = axios.create({
+  baseURL: CHAT_API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
 
 export interface GroupSettings {
   anyoneCanAddMembers: boolean
@@ -49,9 +62,71 @@ export interface DeleteGroupAvatarResponse {
   group: Group
 }
 
+// Get Groups Response
+export interface GroupMemberUser {
+  _id: string
+  name: string
+  username: string
+  email: string
+  phoneNumber: string
+  phoneVisibility: string
+  avatar: string | null
+  isVerified: boolean
+  lastSeen: string
+  timezone: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface GroupMemberData {
+  user: GroupMemberUser
+  role: "owner" | "admin" | "member"
+  joinedAt: string
+  addedBy: string
+  status: "accepted" | "pending"
+}
+
+export interface GroupWithDetails {
+  _id: string
+  name: string
+  description: string
+  avatar: string | null
+  createdAt: string
+  updatedAt: string
+  createdBy: string
+  settings: GroupSettings
+  memberCount: number
+  members: GroupMemberData[]
+  userRole: "owner" | "admin" | "member"
+  unread: boolean
+}
+
+export interface GetGroupsResponse {
+  message: string
+  data: {
+    groups: GroupWithDetails[]
+    pagination: {
+      currentPage: number
+      totalPages: number
+      totalCount: number
+      itemsPerPage: number
+      hasNextPage: boolean
+      hasPrevPage: boolean
+      nextPage: number | null
+      prevPage: number | null
+    }
+  }
+}
+
 // Create a new group
 export const createGroup = async (data: CreateGroupRequest): Promise<CreateGroupResponse> => {
   const response = await apiInstance.post<CreateGroupResponse>("/group", data)
+  return response.data
+}
+
+// Get all groups
+export const getGroups = async (): Promise<GetGroupsResponse> => {
+  const response = await chatApiInstance.get<GetGroupsResponse>("/group")
   return response.data
 }
 

@@ -1,10 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import * as groupApi from "@/lib/api/group-api"
-import type { Group, CreateGroupRequest, UpdateGroupRequest, GroupMember } from "@/lib/api/group-api"
+import type { Group, CreateGroupRequest, UpdateGroupRequest, GroupMember, GroupWithDetails } from "@/lib/api/group-api"
+
+// Re-export GroupWithDetails so chat-page.tsx can import it
+export type { GroupWithDetails }
 
 interface GroupState {
   creatingGroup: Group | null
   selectedGroup: Group | null
+  groups: GroupWithDetails[]
   groupMembers: GroupMember[]
   isLoadingCreate: boolean
   isLoadingUploadAvatar: boolean
@@ -14,6 +18,7 @@ interface GroupState {
   isLoadingInviteMember: boolean
   isLoadingRemoveMember: boolean
   isLoadingUpdateMemberRole: boolean
+  isLoadingGroups: boolean
   errorCreate: string | null
   errorUploadAvatar: string | null
   errorDeleteAvatar: string | null
@@ -22,11 +27,13 @@ interface GroupState {
   errorInviteMember: string | null
   errorRemoveMember: string | null
   errorUpdateMemberRole: string | null
+  errorGroups: string | null
 }
 
 const initialState: GroupState = {
   creatingGroup: null,
   selectedGroup: null,
+  groups: [],
   groupMembers: [],
   isLoadingCreate: false,
   isLoadingUploadAvatar: false,
@@ -36,6 +43,7 @@ const initialState: GroupState = {
   isLoadingInviteMember: false,
   isLoadingRemoveMember: false,
   isLoadingUpdateMemberRole: false,
+  isLoadingGroups: false,
   errorCreate: null,
   errorUploadAvatar: null,
   errorDeleteAvatar: null,
@@ -44,6 +52,7 @@ const initialState: GroupState = {
   errorInviteMember: null,
   errorRemoveMember: null,
   errorUpdateMemberRole: null,
+  errorGroups: null,
 }
 
 export const createGroupThunk = createAsyncThunk(
@@ -54,6 +63,18 @@ export const createGroupThunk = createAsyncThunk(
       return response.group
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to create group")
+    }
+  },
+)
+
+export const getGroupsThunk = createAsyncThunk(
+  "group/getGroups",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await groupApi.getGroups()
+      return response.data.groups
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch groups")
     }
   },
 )
@@ -161,6 +182,11 @@ const groupSlice = createSlice({
       state.errorUploadAvatar = null
       state.errorDeleteAvatar = null
       state.errorUpdate = null
+      state.errorGroups = null
+      state.errorGetMembers = null
+      state.errorInviteMember = null
+      state.errorRemoveMember = null
+      state.errorUpdateMemberRole = null
     },
   },
   extraReducers: (builder) => {
@@ -178,6 +204,22 @@ const groupSlice = createSlice({
       .addCase(createGroupThunk.rejected, (state, action) => {
         state.isLoadingCreate = false
         state.errorCreate = action.payload as string
+      })
+
+    // Get Groups
+    builder
+      .addCase(getGroupsThunk.pending, (state) => {
+        state.isLoadingGroups = true
+        state.errorGroups = null
+      })
+      .addCase(getGroupsThunk.fulfilled, (state, action) => {
+        state.isLoadingGroups = false
+        state.groups = action.payload
+        state.errorGroups = null
+      })
+      .addCase(getGroupsThunk.rejected, (state, action) => {
+        state.isLoadingGroups = false
+        state.errorGroups = action.payload as string
       })
 
     // Upload Avatar

@@ -166,22 +166,22 @@ export interface SendDirectMessageResponse {
 }
 
 export const createDirectChat = async (otherUserId: string): Promise<DirectChatResponse> => {
-  const response = await chatApiInstance.post<DirectChatResponse>("/chat/direct", { otherUserId })
+  const response = await chatApiInstance.post<DirectChatResponse>("/direct", { otherUserId })
   return response.data
 }
 
 export const getDirectChats = async (): Promise<DirectChatsResponse> => {
-  const response = await chatApiInstance.get<DirectChatsResponse>("/chat/direct")
+  const response = await chatApiInstance.get<DirectChatsResponse>("/direct")
   return response.data
 }
 
 export const getDirectMessages = async (chatId: string): Promise<DirectMessagesResponse> => {
-  const response = await chatApiInstance.get<DirectMessagesResponse>(`/chat/direct/${chatId}/messages`)
+  const response = await chatApiInstance.get<DirectMessagesResponse>(`/direct/${chatId}/messages`)
   return response.data
 }
 
 export const getDirectChatRequests = async (): Promise<DirectChatRequestsResponse> => {
-  const response = await chatApiInstance.get<DirectChatRequestsResponse>("/chat/direct/requests")
+  const response = await chatApiInstance.get<DirectChatRequestsResponse>("/direct/requests")
   return response.data
 }
 
@@ -190,7 +190,7 @@ export const respondDirectChatInvitation = async (
   action: "accept" | "reject",
 ): Promise<RespondDirectChatInvitationResponse> => {
   const response = await chatApiInstance.post<RespondDirectChatInvitationResponse>(
-    `/chat/direct/${chatId}/invitation`,
+    `/direct/${chatId}/invitation`,
     { action },
   )
   return response.data
@@ -199,6 +199,6 @@ export const respondDirectChatInvitation = async (
 export const sendDirectMessage = async (
   payload: SendDirectMessageRequest,
 ): Promise<SendDirectMessageResponse> => {
-  const response = await chatApiInstance.post<SendDirectMessageResponse>("/chat/messages", payload)
+  const response = await chatApiInstance.post<SendDirectMessageResponse>("/messages", payload)
   return response.data
 }
