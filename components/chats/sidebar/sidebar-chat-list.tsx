@@ -82,11 +82,7 @@ export function SidebarChatList({ chats, activeChatId, onSelectChat, userPresenc
                 />
               </div>
             </div>
-            {chat.unreadCount > 0 && (
-              <span className="h-5 min-w-5 px-1.5 rounded-full bg-foreground text-background text-xs flex items-center justify-center">
-                {chat.unreadCount}
-              </span>
-            )}
+
           </motion.button>
         )
       })}
