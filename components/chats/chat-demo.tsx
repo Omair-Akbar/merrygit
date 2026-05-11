@@ -91,7 +91,7 @@ export function ChatDemo() {
         </div> */}
 
         {/* Inner Content Container to clip the beam and show glass background */}
-        <div className="relative z-10 bg-black/5 dark:bg-white/5 backdrop-blur-xs rounded-[calc(1rem-1px)] overflow-hidden">
+        <div className="relative z-10  backdrop-blur-xs rounded-[calc(1rem-1px)] overflow-hidden">
           {/* Chat header */}
           <div className="px-4 py-3 border-b border-white/5 flex items-center gap-3">
             <Avatar className="h-10 w-10">
