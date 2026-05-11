@@ -69,11 +69,11 @@ function GitHubStars() {
     )
   }
 
-  if (isLoading) {
-    return (
-      <GlobalLoader />
-    )
-  }
+  // if (isLoading) {
+    // return (
+      // <GlobalLoader />
+    // )
+  // }
 
   return (
     <a
@@ -115,12 +115,12 @@ export function Header() {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl"
+      className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/20 backdrop-blur-xl font-exo"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <Logo size={36} />
-          <span className="text-lg font-semibold">MerryGit</span>
+          <span className="text-lg font-semibold font-exo">MerryGit</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
@@ -146,7 +146,7 @@ export function Header() {
             {isAuthenticated ? (
               <>
                 <Button variant="ghost" asChild>
-                  <Link href="/chat">Chat</Link>
+                  <Link href="/chats">Chat</Link>
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 bg-transparent">
                   <LogOut className="h-4 w-4" />
@@ -207,7 +207,7 @@ export function Header() {
             {isAuthenticated ? (
               <>
                 <Button variant="outline" className="w-full bg-transparent" asChild>
-                  <Link href="/chat" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/chats" onClick={() => setIsMenuOpen(false)}>
                     Chat
                   </Link>
                 </Button>

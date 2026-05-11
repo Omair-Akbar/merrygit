@@ -155,6 +155,10 @@
   }
 }
 
+.font-exo {
+  font-family: var(--font-exo), sans-serif;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

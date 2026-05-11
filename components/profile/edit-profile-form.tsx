@@ -206,7 +206,7 @@ export function EditProfileForm() {
       const result = await dispatch(uploadAvatar(file))
       
       if (uploadAvatar.fulfilled.match(result)) {
-        toast.success("Avatar uploaded successfully!")
+        // toast.success("Avatar uploaded successfully!")
         setIsAvatarDialogOpen(false)
         setSelectedImage(null)
       } else {
