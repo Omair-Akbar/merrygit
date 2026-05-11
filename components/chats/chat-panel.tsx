@@ -3,7 +3,7 @@
 import type { RefObject } from "react"
 import { Fragment, useState } from "react"
 import Link from "next/link"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { ArrowLeft, Lock, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
