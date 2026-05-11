@@ -215,15 +215,15 @@ export function ChatPanel({
       {isRequestMode ? (
         <div className="border-t border-border p-4 flex items-center gap-3">
           <Button
-            variant="outline"
-            className="flex-1"
+            // variant="outline"
+            className="flex-1 bg-transparent border border-gray-300 hover:bg-gray-100/10 text-black dark:text-white"
             onClick={onRejectRequest}
           >
             Reject
           </Button>
           <Button
-            variant="secondary"
-            className="flex-1"
+            // variant="secondary"
+            className="flex-1 bg-green-500/20 border border-green-300 text-green-600 hover:bg-green-500/30"
             onClick={onAcceptRequest}
           >
             Accept

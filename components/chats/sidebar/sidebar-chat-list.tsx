@@ -88,11 +88,11 @@ export function SidebarChatList({
               <div className="flex items-center justify-between">
                 <p className="font-medium truncate font-exo">{chat.participantName}</p>
                 <div className="flex items-center gap-2 shrink-0">
-                  {chat.status === "pending" ? (
+                  {/* {chat.status === "pending" ? (
                     <span className="rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
                       Pending
                     </span>
-                  ) : null}
+                  ) : null} */}
                   <span className="text-xs text-muted-foreground ">
                     {chat.messages[chat.messages.length - 1]?.timestamp || ""}
                   </span>
@@ -102,7 +102,7 @@ export function SidebarChatList({
                 <p className="text-sm text-muted-foreground truncate ">
                   {chat.isGroup ? chat.participantUsername : `@${chat.participantUsername}`}
                 </p>
-                {!chat.isGroup ? (
+                {chat.isGroup ? (
                   <UserStatusIndicator
                     isOnline={isOnline}
                     isViewing={isViewing}
