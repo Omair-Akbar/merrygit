@@ -31,6 +31,7 @@ import { ChatHeader } from "@/components/chats/chat-header"
 import { ChatEmptyState } from "@/components/chats/chat-empty-state"
 import { ChatPanel } from "@/components/chats/chat-panel"
 import { GroupDetails } from "@/components/chats/group-details"
+import { PendingGroupInvitation } from "@/components/chats/pending-group-invitation"
 import { BackgroundGradient } from "@/components/chats/chat-background"
 import { GroupDetailsForm } from "@/components/chats/forms/group-details-form"
 import { GroupAvatarForm } from "@/components/chats/forms/group-avatar-form"
@@ -93,6 +94,15 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const [isGroupCreateOpen, setIsGroupCreateOpen] = useState(false)
   const [showGroupDetails, setShowGroupDetails] = useState(false)
   const [groupStep, setGroupStep] = useState<GroupStep>("details")
+
+  // Check if current user has invitation status for a group
+  const getUserInvitationStatus = (group: GroupWithDetails): "accepted" | "pending" | "declined" | null => {
+    if (!currentUser) return null
+    const userId = currentUser.id || currentUser._id
+    if (!userId) return null
+    const userMember = group.members.find((m) => m.user._id === userId)
+    return userMember?.status || null
+  }
 
   // Step 1: Details
   const [groupName, setGroupName] = useState("")
@@ -163,36 +173,47 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
   // Convert groups from API to chat format
   const groupChats = useMemo(() => {
-    return groups.map((group: GroupWithDetails) => ({
-      id: group._id,
-      participantId: group._id,
-      participantName: group.name,
-      participantUsername: group.memberCount === 1 ? "1 member" : `${group.memberCount} members`,
-      participantAvatar: group.avatar || undefined,
-      unreadCount: group.unread ? 1 : 0,
-      isOnline: false,
-      isViewing: false,
-      isGroup: true,
-      isRequest: false,
-      messages: groupMessagesByChatId[group._id] || [],
-      lastMessageAt: groupLastMessageAtByChatId[group._id] || group.updatedAt || group.createdAt,
-      _id: group._id,
-      name: group.name,
-      description: group.description,
-      avatar: group.avatar,
-      createdAt: group.createdAt,
-      updatedAt: group.updatedAt,
-      settings: group.settings,
-      members: group.members,
-      userRole: group.userRole,
-      memberCount: group.memberCount,
-    }))
-  }, [groups, groupMessagesByChatId, groupLastMessageAtByChatId])
+    return groups.map((group: GroupWithDetails) => {
+      const userInvitationStatus = getUserInvitationStatus(group)
+      return {
+        id: group._id,
+        participantId: group._id,
+        participantName: group.name,
+        participantUsername: group.memberCount === 1 ? "1 member" : `${group.memberCount} members`,
+        participantAvatar: group.avatar || undefined,
+        unreadCount: group.unread ? 1 : 0,
+        isOnline: false,
+        isViewing: false,
+        isGroup: true,
+        isRequest: false,
+        status: userInvitationStatus,
+        messages: groupMessagesByChatId[group._id] || [],
+        lastMessageAt: groupLastMessageAtByChatId[group._id] || group.updatedAt || group.createdAt,
+        _id: group._id,
+        name: group.name,
+        description: group.description,
+        avatar: group.avatar,
+        createdAt: group.createdAt,
+        updatedAt: group.updatedAt,
+        settings: group.settings,
+        members: group.members,
+        userRole: group.userRole,
+        memberCount: group.memberCount,
+      }
+    })
+  }, [groups, groupMessagesByChatId, groupLastMessageAtByChatId, currentUser])
   const groupChatsCount = groupChats.length
+
+  const activeGroupStatus = useMemo(() => {
+    if (!activeChat || !activeChat.isGroup) return null
+    const activeGroup = groups.find((group) => group._id === activeChat.id)
+    if (activeGroup) return getUserInvitationStatus(activeGroup)
+    return (activeChat as any).status || null
+  }, [activeChat, groups, currentUser])
 
   // Handle chatId from URL params
   useEffect(() => {
-    if (!chatIdParam || chats.length === 0 && groupChats.length === 0) return
+    if (!chatIdParam || chats.length === 0 && groupChatsCount === 0) return
     const allChats = chatType === "group" ? groupChats : chats
     const matchedChat = allChats.find((chat) => chat.id === chatIdParam)
     if (!matchedChat) return
@@ -257,6 +278,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   // Fetch messages for active direct chat
   useEffect(() => {
     if (!activeChat || chatType !== "direct" || view !== "messages") return
+    if (activeChat.isGroup || activeChat.isRequest) return
     if (loadedMessagesByChatId[activeChat.id]) return
     if (isLoadingMessagesByChatId[activeChat.id]) return
     dispatch(fetchDirectMessagesThunk({ chatId: activeChat.id }))
@@ -265,11 +287,14 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   // Fetch messages for active group chat
   useEffect(() => {
     if (!activeChat || !activeChat.isGroup || view !== "messages") return
+    // Only fetch messages if user has accepted the group invitation
+    if (activeGroupStatus !== "accepted") return
     if (loadedGroupMessagesByChatId[activeChat.id]) return
     if (isLoadingGroupMessagesByChatId[activeChat.id]) return
     dispatch(fetchGroupMessagesThunk({ groupId: activeChat.id }))
   }, [
     activeChat,
+    activeGroupStatus,
     view,
     loadedGroupMessagesByChatId,
     isLoadingGroupMessagesByChatId,
@@ -505,9 +530,9 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const activePresence = getActiveUserPresence()
   const isLoadingActiveMessages = Boolean(
     activeChat &&
-      (activeChat.isGroup
-        ? isLoadingGroupMessagesByChatId[activeChat.id]
-        : isLoadingMessagesByChatId[activeChat.id]),
+    (activeChat.isGroup
+      ? isLoadingGroupMessagesByChatId[activeChat.id]
+      : isLoadingMessagesByChatId[activeChat.id]),
   )
   const isLoadingSidebarChats = chatType === "group" ? isLoadingGroups : isLoadingChats
   const headerAction = isGroupView && !activeChat ? (
@@ -595,6 +620,18 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
             </>
           ) : activeChat && isActiveGroupChat && showGroupDetails ? (
             <GroupDetails group={activeChat as any} onBack={() => setShowGroupDetails(false)} />
+          ) : activeChat && isActiveGroupChat && activeGroupStatus === "pending" ? (
+            <PendingGroupInvitation
+              group={activeChat as GroupWithDetails}
+              onBack={() => dispatch(setActiveChat(null))}
+              onAccept={() => {
+                setShowGroupDetails(false)
+                // Refresh groups to update status, then fetch messages
+                dispatch(getGroupsThunk()).then(() => {
+                  dispatch(fetchGroupMessagesThunk({ groupId: activeChat.id }))
+                })
+              }}
+            />
           ) : activeChat && isActiveGroupChat ? (
             <ChatPanel
               chat={activeChat}
