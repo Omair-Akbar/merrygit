@@ -84,6 +84,42 @@ export interface DirectMessagesResponse {
   }
 }
 
+export interface GroupMessagesResponse {
+  message: string
+  data: {
+    messages: Array<{
+      _id: string
+      chatType: "group"
+      groupChatId: string
+      senderId: string
+      text: string
+      messageType: string
+      seenBy: string[]
+      replyTo: string | null
+      reactions: unknown[]
+      createdAt: string
+      sender?: {
+        _id: string
+        name: string
+        email: string
+        username: string
+        avatar: string | null
+      }
+    }>
+    chatType: "group"
+    pagination: {
+      currentPage: number
+      totalPages: number
+      totalCount: number
+      itemsPerPage: number
+      hasNextPage: boolean
+      hasPrevPage: boolean
+      nextPage: number | null
+      prevPage: number | null
+    }
+  }
+}
+
 export interface DirectChatRequestsResponse {
   message: string
   data: {
@@ -140,6 +176,14 @@ export interface SendDirectMessageRequest {
   replyTo?: string | null
 }
 
+export interface SendGroupMessageRequest {
+  chatId: string
+  text: string
+  messageType: "text"
+  chatType: "group"
+  replyTo?: string | null
+}
+
 export interface SendDirectMessageResponse {
   message: string
   data: {
@@ -165,23 +209,53 @@ export interface SendDirectMessageResponse {
   }
 }
 
+export interface SendGroupMessageResponse {
+  message: string
+  data: {
+    _id: string
+    chatType: "group"
+    groupChatId: string
+    senderId: string
+    text: string
+    messageType: string
+    seenBy: string[]
+    replyTo: string | null
+    isDeleted: boolean
+    reactions: unknown[]
+    createdAt: string
+    updatedAt: string
+    sender?: {
+      _id: string
+      name: string
+      email: string
+      username: string
+      avatar: string | null
+    }
+  }
+}
+
 export const createDirectChat = async (otherUserId: string): Promise<DirectChatResponse> => {
-  const response = await chatApiInstance.post<DirectChatResponse>("/chat/direct", { otherUserId })
+  const response = await chatApiInstance.post<DirectChatResponse>("/direct", { otherUserId })
   return response.data
 }
 
 export const getDirectChats = async (): Promise<DirectChatsResponse> => {
-  const response = await chatApiInstance.get<DirectChatsResponse>("/chat/direct")
+  const response = await chatApiInstance.get<DirectChatsResponse>("/direct")
   return response.data
 }
 
 export const getDirectMessages = async (chatId: string): Promise<DirectMessagesResponse> => {
-  const response = await chatApiInstance.get<DirectMessagesResponse>(`/chat/direct/${chatId}/messages`)
+  const response = await chatApiInstance.get<DirectMessagesResponse>(`/direct/${chatId}/messages`)
+  return response.data
+}
+
+export const getGroupMessages = async (groupId: string): Promise<GroupMessagesResponse> => {
+  const response = await chatApiInstance.get<GroupMessagesResponse>(`/group/${groupId}/messages`)
   return response.data
 }
 
 export const getDirectChatRequests = async (): Promise<DirectChatRequestsResponse> => {
-  const response = await chatApiInstance.get<DirectChatRequestsResponse>("/chat/direct/requests")
+  const response = await chatApiInstance.get<DirectChatRequestsResponse>("/direct/requests")
   return response.data
 }
 
@@ -190,7 +264,7 @@ export const respondDirectChatInvitation = async (
   action: "accept" | "reject",
 ): Promise<RespondDirectChatInvitationResponse> => {
   const response = await chatApiInstance.post<RespondDirectChatInvitationResponse>(
-    `/chat/direct/${chatId}/invitation`,
+    `/direct/${chatId}/invitation`,
     { action },
   )
   return response.data
@@ -199,6 +273,13 @@ export const respondDirectChatInvitation = async (
 export const sendDirectMessage = async (
   payload: SendDirectMessageRequest,
 ): Promise<SendDirectMessageResponse> => {
-  const response = await chatApiInstance.post<SendDirectMessageResponse>("/chat/messages", payload)
+  const response = await chatApiInstance.post<SendDirectMessageResponse>("/messages", payload)
+  return response.data
+}
+
+export const sendGroupMessage = async (
+  payload: SendGroupMessageRequest,
+): Promise<SendGroupMessageResponse> => {
+  const response = await chatApiInstance.post<SendGroupMessageResponse>("/messages", payload)
   return response.data
 }

@@ -16,6 +16,7 @@ interface ChatMessageProps {
   showSenderMeta?: boolean
   senderName?: string
   senderAvatar?: string
+  reserveAvatarSpace?: boolean
 }
 
 function ChatMessageComponent({
@@ -27,6 +28,7 @@ function ChatMessageComponent({
   showSenderMeta = false,
   senderName,
   senderAvatar,
+  reserveAvatarSpace = false,
 }: ChatMessageProps) {
   const isMe = message.senderId === "me"
   const shouldShowMeta = showSenderMeta && senderName
@@ -62,14 +64,16 @@ function ChatMessageComponent({
       className={cn("flex w-full", isMe ? "justify-end" : "justify-start")}
     >
       <div className={cn("flex gap-3", isMe ? "flex-row-reverse" : "flex-row")}>
-        {shouldShowMeta && (
+        {shouldShowMeta ? (
           <Avatar className="h-8 w-8 mt-1">
             {senderAvatar ? <AvatarImage src={senderAvatar} alt={senderName} /> : null}
             <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
               {getInitials(senderName)}
             </AvatarFallback>
           </Avatar>
-        )}
+        ) : reserveAvatarSpace ? (
+          <div className="h-8 w-8 mt-1" aria-hidden="true" />
+        ) : null}
         <div className={cn("flex flex-col", isMe ? "items-end" : "items-start")}>
           {shouldShowMeta && <p className="text-xs text-muted-foreground mb-1">{senderName}</p>}
           <motion.div
@@ -77,7 +81,7 @@ function ChatMessageComponent({
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             className={cn(
-              "max-w-[250px] md:max-w-150 rounded-2xl px-4 py-2 cursor-pointer transition-all overflow-hidde border",
+              "max-w-62.5 md:max-w-150 rounded-2xl px-4 py-2 cursor-pointer transition-all overflow-hidde border",
               isMe
                 ? "bg-purple-500/30 dark:bg-purple-300/10 dark:text-message-sent-foreground rounded-br-sm border-purple-400/20 "
                 : "bg-gray-800/5 dark:text-message-received-foreground rounded-bl-sm border-purple-400/20",

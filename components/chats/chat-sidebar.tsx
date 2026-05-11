@@ -21,6 +21,7 @@ interface ChatSidebarProps {
   onToggle: () => void
   view?: "messages" | "requests"
   chatType?: "direct" | "group"
+  isLoading?: boolean
 }
 
 export function ChatSidebar({
@@ -31,6 +32,7 @@ export function ChatSidebar({
   onToggle,
   view = "messages",
   chatType = "direct",
+  isLoading = false,
 }: ChatSidebarProps) {
   const dispatch = useAppDispatch()
   const { userPresence } = useAppSelector((state) => state.chat)
@@ -119,6 +121,7 @@ export function ChatSidebar({
                     onSelectChat={handleSelectChat}
                     userPresence={userPresence}
                     view={view}
+                    isLoading={isLoading}
                   />
                 </div>
               </div>

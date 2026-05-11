@@ -1,8 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import type { Chat, UserPresence } from "@/lib/store/slices/chat-slice"
 
@@ -12,13 +14,37 @@ interface SidebarChatListProps {
   onSelectChat: (chat: Chat) => void
   userPresence: Record<string, UserPresence>
   view: "messages" | "requests"
+  isLoading?: boolean
 }
 
 const getPresence = (userPresence: Record<string, UserPresence>, userId: string) => {
   return userPresence[userId] || { isOnline: false, isViewing: false }
 }
 
-export function SidebarChatList({ chats, activeChatId, onSelectChat, userPresence, view }: SidebarChatListProps) {
+export function SidebarChatList({
+  chats,
+  activeChatId,
+  onSelectChat,
+  userPresence,
+  view,
+  isLoading = false,
+}: SidebarChatListProps) {
+  if (isLoading && chats.length === 0) {
+    return (
+      <div className="h-full overflow-y-auto p-4 space-y-4">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={`chat-skel-${index}`} className="flex items-center gap-3">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-40" />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   if (chats.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center text-muted-foreground">
@@ -62,24 +88,28 @@ export function SidebarChatList({ chats, activeChatId, onSelectChat, userPresenc
               <div className="flex items-center justify-between">
                 <p className="font-medium truncate font-exo">{chat.participantName}</p>
                 <div className="flex items-center gap-2 shrink-0">
-                  {chat.status === "pending" ? (
+                  {/* {chat.status === "pending" ? (
                     <span className="rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
                       Pending
                     </span>
-                  ) : null}
+                  ) : null} */}
                   <span className="text-xs text-muted-foreground ">
                     {chat.messages[chat.messages.length - 1]?.timestamp || ""}
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-muted-foreground truncate ">@{chat.participantUsername}</p>
-                <UserStatusIndicator
-                  isOnline={isOnline}
-                  isViewing={isViewing}
-                  showViewingStatus={true}
-                  size="sm"
-                />
+                <p className="text-sm text-muted-foreground truncate ">
+                  {chat.isGroup ? chat.participantUsername : `@${chat.participantUsername}`}
+                </p>
+                {chat.isGroup ? (
+                  <UserStatusIndicator
+                    isOnline={isOnline}
+                    isViewing={isViewing}
+                    showViewingStatus={true}
+                    size="sm"
+                  />
+                ) : null}
               </div>
             </div>
 
