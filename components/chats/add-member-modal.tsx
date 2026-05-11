@@ -114,10 +114,10 @@ export function AddMemberModal({ open, groupId, onOpenChange, onSuccess }: AddMe
           </div>
 
           {searchError ? <p className="text-sm text-destructive">{searchError}</p> : null}
-
+{/* 
           {query.trim().length > 0 && !isSearching && exactMatches.length === 0 && !searchError ? (
             <p className="text-sm text-muted-foreground">No exact match found.</p>
-          ) : null}
+          ) : null} */}
 
           {exactMatches.length > 0 ? (
             <div className="space-y-2">

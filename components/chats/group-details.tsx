@@ -212,12 +212,13 @@ export function GroupDetails({ group, onBack }: GroupDetailsProps) {
             </Button>
           </div>
 
-          <div className="flex items-center justify-between gap-2 sticky top-0 z-10 bg-background pb-2 border-b border-border">
+          <div className="flex items-center justify-between gap-2 top-0 z-10 bg-transparent pb-6 border-b border-border">
             <p className="text-sm text-muted-foreground">Update group info and settings.</p>
             <div className="flex items-center gap-2">
               {!isEditing ? (
                 <Button
-                  variant="outline"
+                className="bg-black/10 dark:bg-white dark:text-black"
+                  variant="primary"
                   size="sm"
                   onClick={() => setIsEditing(true)}
                   disabled={isLoadingUpdate}
@@ -332,7 +333,7 @@ export function GroupDetails({ group, onBack }: GroupDetailsProps) {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     disabled={!isEditing}
-                    className="w-full min-h-20 px-3 py-2 rounded-md border border-border bg-background disabled:opacity-50"
+                    className="w-full min-h-20 px-3 py-2 rounded-md border border-border bg-transparent disabled:opacity-50"
                   />
                 </div>
               </div>

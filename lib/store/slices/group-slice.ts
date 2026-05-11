@@ -19,6 +19,7 @@ interface GroupState {
   isLoadingRemoveMember: boolean
   isLoadingUpdateMemberRole: boolean
   isLoadingGroups: boolean
+  isLoadingRespondInvitation: boolean
   errorCreate: string | null
   errorUploadAvatar: string | null
   errorDeleteAvatar: string | null
@@ -28,6 +29,7 @@ interface GroupState {
   errorRemoveMember: string | null
   errorUpdateMemberRole: string | null
   errorGroups: string | null
+  errorRespondInvitation: string | null
 }
 
 const initialState: GroupState = {
@@ -44,6 +46,7 @@ const initialState: GroupState = {
   isLoadingRemoveMember: false,
   isLoadingUpdateMemberRole: false,
   isLoadingGroups: false,
+  isLoadingRespondInvitation: false,
   errorCreate: null,
   errorUploadAvatar: null,
   errorDeleteAvatar: null,
@@ -53,6 +56,7 @@ const initialState: GroupState = {
   errorRemoveMember: null,
   errorUpdateMemberRole: null,
   errorGroups: null,
+  errorRespondInvitation: null,
 }
 
 export const createGroupThunk = createAsyncThunk(
@@ -162,6 +166,21 @@ export const updateMemberRoleThunk = createAsyncThunk(
       return response.member
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update member role")
+    }
+  },
+)
+
+export const respondToGroupInvitationThunk = createAsyncThunk(
+  "group/respondToInvitation",
+  async (
+    { groupId, action }: { groupId: string; action: "accept" | "decline" },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await groupApi.respondToGroupInvitation(groupId, { action })
+      return { groupId, status: response.status }
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to respond to invitation")
     }
   },
 )
@@ -337,6 +356,35 @@ const groupSlice = createSlice({
       .addCase(updateMemberRoleThunk.rejected, (state, action) => {
         state.isLoadingUpdateMemberRole = false
         state.errorUpdateMemberRole = action.payload as string
+      })
+
+    // Respond to Group Invitation
+    builder
+      .addCase(respondToGroupInvitationThunk.pending, (state) => {
+        state.isLoadingRespondInvitation = true
+        state.errorRespondInvitation = null
+      })
+      .addCase(respondToGroupInvitationThunk.fulfilled, (state, action) => {
+        state.isLoadingRespondInvitation = false
+        state.errorRespondInvitation = null
+        
+        // Update the group's member status in the groups array
+        state.groups = state.groups.map((group) =>
+          group._id === action.payload.groupId
+            ? {
+                ...group,
+                members: group.members.map((member) =>
+                  member.status === "pending"
+                    ? { ...member, status: action.payload.status === "accepted" ? "accepted" : "declined" }
+                    : member,
+                ),
+              }
+            : group,
+        )
+      })
+      .addCase(respondToGroupInvitationThunk.rejected, (state, action) => {
+        state.isLoadingRespondInvitation = false
+        state.errorRespondInvitation = action.payload as string
       })
   },
 })

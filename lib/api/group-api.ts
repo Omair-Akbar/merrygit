@@ -245,4 +245,25 @@ export const updateMemberRole = async (
   return response.data
 }
 
+// Respond to group invitation
+export interface RespondToInvitationRequest {
+  action: "accept" | "decline"
+}
+
+export interface RespondToInvitationResponse {
+  message: string
+  status: "accepted" | "declined"
+}
+
+export const respondToGroupInvitation = async (
+  groupId: string,
+  data: RespondToInvitationRequest,
+): Promise<RespondToInvitationResponse> => {
+  const response = await chatApiInstance.post<RespondToInvitationResponse>(
+    `/group/${groupId}/invitation`,
+    data,
+  )
+  return response.data
+}
+
 export default chatApiInstance
