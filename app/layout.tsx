@@ -4,7 +4,7 @@ import { Inter, Geist_Mono, Exo } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
 import { Toaster } from "react-hot-toast"
-import { LoadingWrapper } from "@/components/LoadingWrapper"
+// import { LoadingWrapper } from "@/components/LoadingWrapper"
 
 // <CHANGE> Load Inter font for body text
 const inter = Inter({
@@ -44,7 +44,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${exo.variable} ${inter.variable}`}>
       <body className="antialiased">
         <Providers>
-          <LoadingWrapper>
+          {/* <LoadingWrapper> */}
             <Toaster
               position="bottom-right"
               toastOptions={{
@@ -71,7 +71,7 @@ export default function RootLayout({
               }}
             />
             {children}
-          </LoadingWrapper>
+          {/* </LoadingWrapper> */}
         </Providers>
       </body>
     </html>

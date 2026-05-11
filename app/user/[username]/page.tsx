@@ -100,7 +100,7 @@ export default function UserProfilePage({ params }: { params: Promise<{ username
           {/* Action buttons */}
           <div className="flex gap-4 justify-center">
             <Button asChild>
-              <Link href={`/chat?user=${user.username}`}>
+              <Link href={`/chats?user=${user.username}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Message
               </Link>
