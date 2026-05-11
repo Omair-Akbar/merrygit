@@ -323,9 +323,16 @@ const groupSlice = createSlice({
         state.isLoadingUpdateMemberRole = true
         state.errorUpdateMemberRole = null
       })
-      .addCase(updateMemberRoleThunk.fulfilled, (state) => {
+      .addCase(updateMemberRoleThunk.fulfilled, (state, action) => {
         state.isLoadingUpdateMemberRole = false
         state.errorUpdateMemberRole = null
+
+        const updatedMember = action.payload
+        state.groupMembers = state.groupMembers.map((member) =>
+          member.user._id === updatedMember.userId
+            ? { ...member, role: updatedMember.newRole }
+            : member,
+        )
       })
       .addCase(updateMemberRoleThunk.rejected, (state, action) => {
         state.isLoadingUpdateMemberRole = false

@@ -4,8 +4,10 @@ import {
   getDirectChatRequests,
   getDirectChats,
   getDirectMessages,
+  getGroupMessages,
   respondDirectChatInvitation,
   sendDirectMessage,
+  sendGroupMessage,
 } from "@/lib/api/chat-api"
 import type { RootState } from "@/lib/store/store"
 
@@ -72,6 +74,11 @@ interface ChatState {
   isLoadingMessagesByChatId: Record<string, boolean>
   loadedMessagesByChatId: Record<string, boolean>
   messagesErrorByChatId: Record<string, string | null>
+  isLoadingGroupMessagesByChatId: Record<string, boolean>
+  loadedGroupMessagesByChatId: Record<string, boolean>
+  groupMessagesErrorByChatId: Record<string, string | null>
+  groupMessagesByChatId: Record<string, Message[]>
+  groupLastMessageAtByChatId: Record<string, string | null>
   isRespondingToRequestByChatId: Record<string, boolean>
   respondRequestErrorByChatId: Record<string, string | null>
 }
@@ -97,8 +104,43 @@ const initialState: ChatState = {
   isLoadingMessagesByChatId: {},
   loadedMessagesByChatId: {},
   messagesErrorByChatId: {},
+  isLoadingGroupMessagesByChatId: {},
+  loadedGroupMessagesByChatId: {},
+  groupMessagesErrorByChatId: {},
+  groupMessagesByChatId: {},
+  groupLastMessageAtByChatId: {},
   isRespondingToRequestByChatId: {},
   respondRequestErrorByChatId: {},
+}
+
+const mapApiMessageToMessage = (
+  message: {
+    _id: string
+    senderId: string
+    text: string
+    seenBy: string[]
+    createdAt: string
+    sender?: {
+      name: string
+      avatar: string | null
+    }
+  },
+  currentUserId: string | null,
+): Message => {
+  const isMe = Boolean(currentUserId && message.senderId === currentUserId)
+
+  return {
+    id: message._id,
+    content: message.text,
+    senderId: isMe ? "me" : message.senderId,
+    senderName: message.sender?.name,
+    senderAvatar: message.sender?.avatar || undefined,
+    receiverId: "",
+    timestamp: formatMessageTimestamp(message.createdAt),
+    dayLabel: formatMessageDayLabel(message.createdAt),
+    isEncrypted: true,
+    isRead: currentUserId ? message.seenBy.includes(currentUserId) : false,
+  }
 }
 
 export const createDirectChatThunk = createAsyncThunk(
@@ -167,6 +209,20 @@ export const fetchDirectMessagesThunk = createAsyncThunk(
   },
 )
 
+export const fetchGroupMessagesThunk = createAsyncThunk(
+  "chat/fetchGroupMessages",
+  async ({ groupId }: { groupId: string }, { rejectWithValue, getState }) => {
+    try {
+      const response = await getGroupMessages(groupId)
+      const state = getState() as RootState
+      const currentUserId = state.auth.user?._id || null
+      return { groupId, messages: response.data.messages, currentUserId }
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch messages")
+    }
+  },
+)
+
 export const fetchDirectChatRequestsThunk = createAsyncThunk(
   "chat/fetchDirectChatRequests",
   async (_, { rejectWithValue }) => {
@@ -211,6 +267,29 @@ export const sendDirectMessageThunk = createAsyncThunk(
       const state = getState() as RootState
       const currentUserId = state.auth.user?._id || null
       return { chatId, message: response.data, currentUserId }
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to send message")
+    }
+  },
+)
+
+export const sendGroupMessageThunk = createAsyncThunk(
+  "chat/sendGroupMessage",
+  async (
+    { groupId, text, replyTo }: { groupId: string; text: string; replyTo?: string | null },
+    { rejectWithValue, getState },
+  ) => {
+    try {
+      const response = await sendGroupMessage({
+        chatId: groupId,
+        text,
+        messageType: "text",
+        chatType: "group",
+        replyTo: replyTo ?? null,
+      })
+      const state = getState() as RootState
+      const currentUserId = state.auth.user?._id || null
+      return { groupId, message: response.data, currentUserId }
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to send message")
     }
@@ -592,21 +671,9 @@ const chatSlice = createSlice({
         state.loadedMessagesByChatId[chatId] = true
         state.messagesErrorByChatId[chatId] = null
 
-        const mappedMessages: Message[] = messages.map((message) => {
-          const isMe = Boolean(currentUserId && message.senderId === currentUserId)
-          return {
-            id: message._id,
-            content: message.text,
-            senderId: isMe ? "me" : message.senderId,
-            senderName: message.sender?.name,
-            senderAvatar: message.sender?.avatar || undefined,
-            receiverId: "",
-            timestamp: formatMessageTimestamp(message.createdAt),
-            dayLabel: formatMessageDayLabel(message.createdAt),
-            isEncrypted: true,
-            isRead: currentUserId ? message.seenBy.includes(currentUserId) : false,
-          }
-        })
+        const mappedMessages: Message[] = messages.map((message) =>
+          mapApiMessageToMessage(message, currentUserId),
+        )
 
         const lastMessage = mappedMessages[mappedMessages.length - 1]
         const lastMessageAt = getLatestMessageCreatedAt(messages)
@@ -636,6 +703,39 @@ const chatSlice = createSlice({
         state.isLoadingMessagesByChatId[chatId] = false
         state.messagesErrorByChatId[chatId] = action.payload as string
       })
+      .addCase(fetchGroupMessagesThunk.pending, (state, action) => {
+        state.isLoadingGroupMessagesByChatId[action.meta.arg.groupId] = true
+        state.groupMessagesErrorByChatId[action.meta.arg.groupId] = null
+      })
+      .addCase(fetchGroupMessagesThunk.fulfilled, (state, action) => {
+        const { groupId, messages, currentUserId } = action.payload
+        state.isLoadingGroupMessagesByChatId[groupId] = false
+        state.loadedGroupMessagesByChatId[groupId] = true
+        state.groupMessagesErrorByChatId[groupId] = null
+
+        const mappedMessages: Message[] = messages.map((message) =>
+          mapApiMessageToMessage(message, currentUserId),
+        )
+        const lastMessage = mappedMessages[mappedMessages.length - 1]
+        const lastMessageAt = messages[messages.length - 1]?.createdAt || null
+
+        state.groupMessagesByChatId[groupId] = mappedMessages
+        state.groupLastMessageAtByChatId[groupId] = lastMessageAt
+
+        if (state.activeChat?.id === groupId && state.activeChat.isGroup) {
+          state.activeChat = {
+            ...state.activeChat,
+            messages: mappedMessages,
+            lastMessage: lastMessage || state.activeChat.lastMessage,
+            lastMessageAt: lastMessageAt || state.activeChat.lastMessageAt,
+          }
+        }
+      })
+      .addCase(fetchGroupMessagesThunk.rejected, (state, action) => {
+        const groupId = action.meta.arg.groupId
+        state.isLoadingGroupMessagesByChatId[groupId] = false
+        state.groupMessagesErrorByChatId[groupId] = action.payload as string
+      })
       .addCase(sendDirectMessageThunk.fulfilled, (state, action) => {
         const { chatId, message, currentUserId } = action.payload
         const isMe = Boolean(currentUserId && message.senderId === currentUserId)
@@ -664,6 +764,27 @@ const chatSlice = createSlice({
         )
 
         if (state.activeChat?.id === chatId) {
+          state.activeChat = {
+            ...state.activeChat,
+            messages: [...state.activeChat.messages, mappedMessage],
+            lastMessage: mappedMessage,
+            lastMessageAt: message.createdAt,
+          }
+        }
+
+        state.unlockedMessageId = mappedMessage.id
+      })
+      .addCase(sendGroupMessageThunk.fulfilled, (state, action) => {
+        const { groupId, message, currentUserId } = action.payload
+        const mappedMessage: Message = mapApiMessageToMessage(message, currentUserId)
+
+        state.groupMessagesByChatId[groupId] = [
+          ...(state.groupMessagesByChatId[groupId] || []),
+          mappedMessage,
+        ]
+        state.groupLastMessageAtByChatId[groupId] = message.createdAt
+
+        if (state.activeChat?.id === groupId && state.activeChat.isGroup) {
           state.activeChat = {
             ...state.activeChat,
             messages: [...state.activeChat.messages, mappedMessage],

@@ -1,9 +1,8 @@
-import apiInstance from "./axios-instance"
 import axios from "axios"
 
 // Create a separate instance for chat API to avoid circular dependency
 const CHAT_API_BASE_URL =
-  process.env.NEXT_PUBLIC_CHAT_API_BASE_URL || "http://localhost:5002/api/v1"
+  process.env.NEXT_PUBLIC_CHAT_API_BASE_URL || "http://localhost:5002/api/v1/chat"
 
 const chatApiInstance = axios.create({
   baseURL: CHAT_API_BASE_URL,
@@ -120,7 +119,7 @@ export interface GetGroupsResponse {
 
 // Create a new group
 export const createGroup = async (data: CreateGroupRequest): Promise<CreateGroupResponse> => {
-  const response = await apiInstance.post<CreateGroupResponse>("/group", data)
+  const response = await chatApiInstance.post<CreateGroupResponse>("/group", data)
   return response.data
 }
 
@@ -135,7 +134,7 @@ export const uploadGroupAvatar = async (groupId: string, file: File): Promise<Up
   const formData = new FormData()
   formData.append("avatar", file)
 
-  const response = await apiInstance.post<UploadGroupAvatarResponse>(`/group/${groupId}/avatar`, formData, {
+  const response = await chatApiInstance.post<UploadGroupAvatarResponse>(`/group/${groupId}/avatar`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -145,13 +144,13 @@ export const uploadGroupAvatar = async (groupId: string, file: File): Promise<Up
 
 // Delete group avatar
 export const deleteGroupAvatar = async (groupId: string): Promise<DeleteGroupAvatarResponse> => {
-  const response = await apiInstance.delete<DeleteGroupAvatarResponse>(`/group/${groupId}/avatar`)
+  const response = await chatApiInstance.delete<DeleteGroupAvatarResponse>(`/group/${groupId}/avatar`)
   return response.data
 }
 
 // Update group settings
 export const updateGroup = async (groupId: string, data: UpdateGroupRequest): Promise<UpdateGroupResponse> => {
-  const response = await apiInstance.put<UpdateGroupResponse>(`/group/${groupId}`, data)
+  const response = await chatApiInstance.put<UpdateGroupResponse>(`/group/${groupId}`, data)
   return response.data
 }
 
@@ -214,7 +213,7 @@ export interface RemoveMemberResponse {
 
 // Get group members
 export const getGroupMembers = async (groupId: string): Promise<GetGroupMembersResponse> => {
-  const response = await apiInstance.get<GetGroupMembersResponse>(`/group/${groupId}/members`)
+  const response = await chatApiInstance.get<GetGroupMembersResponse>(`/group/${groupId}/members`)
   return response.data
 }
 
@@ -223,13 +222,13 @@ export const inviteGroupMember = async (
   groupId: string,
   data: InviteMemberRequest,
 ): Promise<InviteMemberResponse> => {
-  const response = await apiInstance.post<InviteMemberResponse>(`/group/${groupId}/members`, data)
+  const response = await chatApiInstance.post<InviteMemberResponse>(`/group/${groupId}/members`, data)
   return response.data
 }
 
 // Remove member from group
 export const removeGroupMember = async (groupId: string, memberId: string): Promise<RemoveMemberResponse> => {
-  const response = await apiInstance.delete<RemoveMemberResponse>(`/group/${groupId}/members/${memberId}`)
+  const response = await chatApiInstance.delete<RemoveMemberResponse>(`/group/${groupId}/members/${memberId}`)
   return response.data
 }
 
@@ -239,11 +238,11 @@ export const updateMemberRole = async (
   memberId: string,
   data: UpdateMemberRoleRequest,
 ): Promise<UpdateMemberRoleResponse> => {
-  const response = await apiInstance.put<UpdateMemberRoleResponse>(
+  const response = await chatApiInstance.put<UpdateMemberRoleResponse>(
     `/group/${groupId}/members/${memberId}/role`,
     data,
   )
   return response.data
 }
 
-export default apiInstance
+export default chatApiInstance
