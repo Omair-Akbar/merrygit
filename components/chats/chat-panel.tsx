@@ -4,7 +4,7 @@ import type { RefObject } from "react"
 import { Fragment, useState } from "react"
 import Link from "next/link"
 import { AnimatePresence } from "framer-motion"
-import { ArrowLeft, Lock } from "lucide-react"
+import { ArrowLeft, Lock, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
@@ -159,21 +159,14 @@ export function ChatPanel({
           </div>
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {isLoadingMessages && chat.messages.length === 0 ? (
-            <div className="space-y-3">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={`msg-skel-${index}`} className="flex gap-3">
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-3 w-24" />
-                    <Skeleton className="h-10 w-full max-w-md" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <AnimatePresence mode="popLayout">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {isLoadingMessages && chat.messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground animate-pulse">Loading messages...</p>
+          </div>
+        ) : (
+          <AnimatePresence mode="popLayout">
               {chat.messages.map((msg, index) => {
                 const dayLabel = msg.dayLabel || null
                 const isNewDay = dayLabel && dayLabel !== lastDayLabel

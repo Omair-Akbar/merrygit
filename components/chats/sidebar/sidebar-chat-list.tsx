@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
 import { Skeleton } from "@/components/ui/skeleton"

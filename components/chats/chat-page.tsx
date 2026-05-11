@@ -192,7 +192,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
   // Handle chatId from URL params
   useEffect(() => {
-    if (!chatIdParam || chats.length === 0 && groupChats.length === 0) return
+    if (!chatIdParam || chats.length === 0 && groupChatsCount === 0) return
     const allChats = chatType === "group" ? groupChats : chats
     const matchedChat = allChats.find((chat) => chat.id === chatIdParam)
     if (!matchedChat) return

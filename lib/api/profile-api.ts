@@ -1,5 +1,17 @@
 import apiInstance from "./axios-instance"
 import type { User } from "./auth-api"
+import axios from "axios"
+
+const CHAT_API_BASE_URL =
+  process.env.NEXT_PUBLIC_CHAT_API_BASE_URL || "http://localhost:5002/api/v1/chat"
+
+const chatApiInstance = axios.create({
+  baseURL: CHAT_API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
 
 export interface UpdateProfileRequest {
   name: string
