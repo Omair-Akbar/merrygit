@@ -87,13 +87,13 @@ export function useSocket(options: UseSocketOptions = {}) {
         dispatch(setUserOnline({ userId: data.userId, isOnline: false }))
       }
 
-      const handleUserViewing = (data: { userId: string; chatId: string }) => {
-        dispatch(setUserViewing({ userId: data.userId, isViewing: true }))
-      }
+      // const handleUserViewing = (data: { userId: string; chatId: string }) => {
+      //   dispatch(setUserViewing({ userId: data.userId, isViewing: true }))
+      // }
 
-      const handleUserNotViewing = (data: { userId: string; chatId: string }) => {
-        dispatch(setUserViewing({ userId: data.userId, isViewing: false }))
-      }
+      // const handleUserNotViewing = (data: { userId: string; chatId: string }) => {
+      //   dispatch(setUserViewing({ userId: data.userId, isViewing: false }))
+      // }
 
       socket.on("connect", handleConnect)
       socket.on("disconnect", handleDisconnect)
@@ -103,8 +103,8 @@ export function useSocket(options: UseSocketOptions = {}) {
       socket.on("typing:stop", handleTypingStop)
       socket.on("user:online", handleUserOnline)
       socket.on("user:offline", handleUserOffline)
-      socket.on("user:viewing", handleUserViewing)
-      socket.on("user:not-viewing", handleUserNotViewing)
+      // socket.on("user:viewing", handleUserViewing)
+      // socket.on("user:not-viewing", handleUserNotViewing)
 
       return () => {
         const s = socketClient.getSocket()
@@ -117,8 +117,8 @@ export function useSocket(options: UseSocketOptions = {}) {
           s.off("typing:stop", handleTypingStop)
           s.off("user:online", handleUserOnline)
           s.off("user:offline", handleUserOffline)
-          s.off("user:viewing", handleUserViewing)
-          s.off("user:not-viewing", handleUserNotViewing)
+          // s.off("user:viewing", handleUserViewing)
+          // s.off("user:not-viewing", handleUserNotViewing)
         }
       }
     }

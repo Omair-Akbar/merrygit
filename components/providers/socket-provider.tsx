@@ -112,13 +112,13 @@ export function SocketProvider({ children }: SocketProviderProps) {
       dispatchRef.current(setUserOnline({ userId: data.userId, isOnline: false }))
     }
 
-    const handleUserViewing = (data: { userId: string; chatId: string }) => {
-      dispatchRef.current(setUserViewing({ userId: data.userId, isViewing: true }))
-    }
+    // const handleUserViewing = (data: { userId: string; chatId: string }) => {
+    //   dispatchRef.current(setUserViewing({ userId: data.userId, isViewing: true }))
+    // }
 
-    const handleUserNotViewing = (data: { userId: string; chatId: string }) => {
-      dispatchRef.current(setUserViewing({ userId: data.userId, isViewing: false }))
-    }
+    // const handleUserNotViewing = (data: { userId: string; chatId: string }) => {
+    //   dispatchRef.current(setUserViewing({ userId: data.userId, isViewing: false }))
+    // }
 
     // ── Register listeners ───────────────────────────────────────────────────
 
@@ -129,8 +129,8 @@ export function SocketProvider({ children }: SocketProviderProps) {
     socket.on("typing:stop", handleTypingStop)
     socket.on("user:online", handleUserOnline)
     socket.on("user:offline", handleUserOffline)
-    socket.on("user:viewing", handleUserViewing)
-    socket.on("user:not-viewing", handleUserNotViewing)
+    // socket.on("user:viewing", handleUserViewing)
+    // socket.on("user:not-viewing", handleUserNotViewing)
 
     // If already connected (React StrictMode double-invoke or hot-reload),
     // the backend already sent its initial online list before these listeners
@@ -150,8 +150,8 @@ export function SocketProvider({ children }: SocketProviderProps) {
       socket.off("typing:stop", handleTypingStop)
       socket.off("user:online", handleUserOnline)
       socket.off("user:offline", handleUserOffline)
-      socket.off("user:viewing", handleUserViewing)
-      socket.off("user:not-viewing", handleUserNotViewing)
+      // socket.off("user:viewing", handleUserViewing)
+      // socket.off("user:not-viewing", handleUserNotViewing)
     }
   // userId is a stable primitive — effect only re-runs on login/logout
   }, [isAuthenticated, userId])  // eslint-disable-line react-hooks/exhaustive-deps
