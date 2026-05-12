@@ -33,6 +33,8 @@ export function useSocket(options: UseSocketOptions = {}) {
     if (socket) {
       const handleConnect = () => {
         setIsConnected(true)
+        socket.emit("get:online-users")
+        socket.emit("get:viewing-users")
         optionsRef.current.onConnect?.()
       }
 

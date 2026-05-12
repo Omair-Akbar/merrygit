@@ -62,6 +62,8 @@ export function SocketProvider({ children }: SocketProviderProps) {
       console.log("[Socket Provider] ✅ Connected. ID:", socket.id)
       setIsConnected(true)
       setConnectionState("connected")
+      socket.emit("get:online-users")
+      socket.emit("get:viewing-users")
     }
 
     const handleDisconnect = (reason: string) => {
@@ -137,6 +139,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
       setIsConnected(true)
       setConnectionState("connected")
       socket.emit("get:online-users")
+      socket.emit("get:viewing-users")
     }
 
     return () => {

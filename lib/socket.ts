@@ -23,6 +23,7 @@ export interface ClientToServerEvents {
   "chat:viewing": (data: { chatId: string }) => void
   "chat:not-viewing": (data: { chatId: string }) => void
   "get:online-users": () => void
+  "get:viewing-users": () => void
 }
 
 class SocketClient {
