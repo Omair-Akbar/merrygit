@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { memo, useState, useRef } from "react"
+import { memo, useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Send, ImageIcon, Smile, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -74,19 +74,52 @@ const EMOJI_LIST = [
 
 interface ChatInputProps {
   onSendMessage: (message: string, attachments?: File[]) => void
+  onTypingStart?: () => void
+  onTypingStop?: () => void
   disabled?: boolean
 }
 
-function ChatInputComponent({ onSendMessage, disabled }: ChatInputProps) {
+function ChatInputComponent({ onSendMessage, onTypingStart, onTypingStop, disabled }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [showEmoji, setShowEmoji] = useState(false)
   const [attachments, setAttachments] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const isTypingRef = useRef(false)
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+    }
+  }, [])
+
+  const handleTyping = useCallback(() => {
+    // Fire typing:start on the first keystroke (not already typing)
+    if (!isTypingRef.current) {
+      isTypingRef.current = true
+      onTypingStart?.()
+    }
+
+    // Reset the 2-second debounce timer on every keystroke
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+    typingTimeoutRef.current = setTimeout(() => {
+      isTypingRef.current = false
+      onTypingStop?.()
+    }, 2000)
+  }, [onTypingStart, onTypingStop])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!message.trim() && attachments.length === 0) return
+
+    // Stop typing indicator immediately on send
+    if (isTypingRef.current) {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+      isTypingRef.current = false
+      onTypingStop?.()
+    }
 
     onSendMessage(message, attachments.length > 0 ? attachments : undefined)
     setMessage("")
@@ -232,7 +265,10 @@ function ChatInputComponent({ onSendMessage, disabled }: ChatInputProps) {
         <Input
           placeholder="Type a message..."
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {
+            setMessage(e.target.value)
+            handleTyping()
+          }}
           disabled={disabled}
           className="flex-1 border active:border-blue-500/40 active:bg-blue-500/20 focus:ring-0 focus-visible:ring-0"
         />
