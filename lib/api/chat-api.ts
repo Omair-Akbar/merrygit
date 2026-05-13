@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const CHAT_API_BASE_URL =
-  process.env.NEXT_PUBLIC_CHAT_API_BASE_URL || "http://localhost:5002/api/v1/chat"
+  process.env.NEXT_PUBLIC_CHAT_API_BASE_URL || "http://localhost:5002/api/v1"
 
 const chatApiInstance = axios.create({
   baseURL: CHAT_API_BASE_URL,
