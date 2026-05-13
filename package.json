@@ -71,6 +71,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@next/swc-win32-x64-msvc": "^16.2.6",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/react": "^19",
