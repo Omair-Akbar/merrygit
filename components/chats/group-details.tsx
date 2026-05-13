@@ -406,7 +406,7 @@ export function GroupDetails({ group, onBack }: GroupDetailsProps) {
                   Members
                 </h3>
                 <div className="flex items-center gap-2">
-                  <Badge>{groupMembers.length} total</Badge>
+                  <Badge className="bg-black dark:bg-white">{groupMembers.length} total</Badge>
                   <Button
                     size="sm"
                     variant="secondary"
