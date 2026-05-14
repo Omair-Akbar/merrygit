@@ -22,8 +22,6 @@ export interface ClientToServerEvents {
   "message:read": (data: { chatId: string; messageId: string }) => void
   "chat:viewing": (data: { chatId: string }) => void
   "chat:not-viewing": (data: { chatId: string }) => void
-  "get:online-users": () => void
-  "get:viewing-users": () => void
 }
 
 class SocketClient {
@@ -33,12 +31,7 @@ class SocketClient {
   private maxReconnectAttempts = 5
 
   connect(token: string): Socket<ServerToClientEvents, ClientToServerEvents> | null {
-    if (this.socket) {
-      if (!this.socket.connected) {
-        this.socket.connect()
-      }
-      return this.socket
-    }
+    if (this.socket?.connected) return this.socket
 
     this.socket = io(this.url, {
       auth: { token },
