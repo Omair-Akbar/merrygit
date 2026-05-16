@@ -3,7 +3,7 @@
 import type { RefObject } from "react"
 import { Fragment, useState } from "react"
 import Link from "next/link"
-import { AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Lock, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -20,9 +20,12 @@ interface ChatPanelProps {
   lockDisplayMode: "text" | "icon" | "custom"
   customLockText: string
   activePresence: { isOnline: boolean; isViewing: boolean }
+  isTyping?: boolean
   messagesEndRef: RefObject<HTMLDivElement | null>
   onMessageClick: (messageId: string) => void
   onSendMessage: (content: string, attachments?: File[]) => void
+  onTypingStart?: () => void
+  onTypingStop?: () => void
   onBack: () => void
   onGroupTitleClick?: () => void
   isLoadingMessages?: boolean
@@ -37,9 +40,12 @@ export function ChatPanel({
   lockDisplayMode,
   customLockText,
   activePresence,
+  isTyping = false,
   messagesEndRef,
   onMessageClick,
   onSendMessage,
+  onTypingStart,
+  onTypingStop,
   onBack,
   onGroupTitleClick,
   isLoadingMessages = false,
@@ -212,6 +218,38 @@ export function ChatPanel({
         </div>
       )}
 
+      {/* Typing indicator — fixed strip above the input, never scrolls */}
+      {!isRequestMode && (
+        <AnimatePresence>
+          {isTyping && (
+            <motion.div
+              key="typing-indicator"
+              initial={{ opacity: 0, y: 6, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="px-4 py-2 flex justify-start"
+            >
+              <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm px-4 py-3 bg-gray-800/5 dark:bg-white/5 border border-purple-400/20">
+                {[0, 1, 2].map((i) => (
+                  <motion.span
+                    key={i}
+                    className="block h-2 w-2 rounded-full bg-muted-foreground/60"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Infinity,
+                      delay: i * 0.15,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+
       {isRequestMode ? (
         <div className="border-t border-border p-4 flex items-center gap-3">
           <Button
@@ -230,7 +268,7 @@ export function ChatPanel({
           </Button>
         </div>
       ) : (
-        <ChatInput onSendMessage={onSendMessage} />
+        <ChatInput onSendMessage={onSendMessage} onTypingStart={onTypingStart} onTypingStop={onTypingStop} />
       )}
 
       <UserDetailsModal

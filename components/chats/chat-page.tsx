@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, KeyboardEvent } from "react"
 import { Users } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks"
+import { useSocket } from "@/hooks/use-socket"
 import {
   fetchDirectChatRequestsThunk,
   fetchDirectChatsThunk,
@@ -61,11 +62,13 @@ const DEFAULT_GROUP_SETTINGS: GroupSettings = {
 
 export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const dispatch = useAppDispatch()
+  const { isConnected, sendMessage, startTyping, stopTyping, joinChat, leaveChat, setViewingChat, setNotViewingChat, markMessageRead } = useSocket()
   const {
     chats,
     activeChat,
     unlockedMessageId,
     userPresence,
+    typingByChatId,
     hasLoadedDirectChats,
     isLoadingChats,
     hasLoadedDirectRequests,
@@ -121,26 +124,25 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const hasFetchedGroups = useRef(false)
+  const lastViewingChatIdRef = useRef<string | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const chatIdParam = searchParams.get("id")
   const isGroupView = view === "messages" && chatType === "group"
   const isActiveGroupChat = activeChat?.isGroup || false
 
-  // Fetch direct chats
+  // Fetch direct chats - always fetch on mount
   useEffect(() => {
     if (view !== "messages") return
     if (chatType !== "direct") return
-    if (hasLoadedDirectChats || isLoadingChats) return
     dispatch(fetchDirectChatsThunk())
-  }, [view, chatType, hasLoadedDirectChats, isLoadingChats, dispatch])
+  }, [view, chatType, dispatch])
 
-  // Fetch direct requests
+  // Fetch direct requests - always fetch on mount
   useEffect(() => {
     if (view !== "requests") return
-    if (hasLoadedDirectRequests || isLoadingRequests) return
     dispatch(fetchDirectChatRequestsThunk())
-  }, [view, hasLoadedDirectRequests, isLoadingRequests, dispatch])
+  }, [view, dispatch])
 
   // Fetch groups when on group view - only once
   useEffect(() => {
@@ -277,12 +279,10 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
   // Fetch messages for active direct chat
   useEffect(() => {
-    if (!activeChat || chatType !== "direct" || view !== "messages") return
-    if (activeChat.isGroup || activeChat.isRequest) return
-    if (loadedMessagesByChatId[activeChat.id]) return
+    if (!activeChat?.id || chatType !== "direct" || view !== "messages") return
     if (isLoadingMessagesByChatId[activeChat.id]) return
     dispatch(fetchDirectMessagesThunk({ chatId: activeChat.id }))
-  }, [activeChat, chatType, view, loadedMessagesByChatId, isLoadingMessagesByChatId, dispatch])
+  }, [activeChat?.id, chatType, view, dispatch])
 
   // Fetch messages for active group chat
   useEffect(() => {
@@ -300,6 +300,33 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     isLoadingGroupMessagesByChatId,
     dispatch,
   ])
+
+  // Keep viewing state in sync across navigation and view changes
+  useEffect(() => {
+    if (!isConnected) return
+
+    const nextChatId = activeChat?.id ?? null
+    const prevChatId = lastViewingChatIdRef.current
+
+    if (prevChatId && prevChatId !== nextChatId) {
+      setNotViewingChat(prevChatId)
+      leaveChat(prevChatId)
+    }
+
+    if (nextChatId) {
+      joinChat(nextChatId)
+      setViewingChat(nextChatId)
+    }
+
+    lastViewingChatIdRef.current = nextChatId
+
+    return () => {
+      if (nextChatId) {
+        setNotViewingChat(nextChatId)
+        leaveChat(nextChatId)
+      }
+    }
+  }, [activeChat?.id, isConnected, view, chatType])
 
   const sortedChats = useMemo(() => {
     const allChats = chatType === "group" ? groupChats : chats
@@ -472,10 +499,41 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     }
 
     dispatch(sendDirectMessageThunk({ chatId: activeChat.id, text: content.trim() }))
+    
+    // Emit message to socket for direct chats
+    if (currentUser) {
+      sendMessage(activeChat.id, {
+        content: content.trim(),
+        senderId: currentUser._id || currentUser.id,
+        senderName: currentUser.name,
+        senderAvatar: currentUser.avatar || "",
+        receiverId: activeChat.participantId,
+        isEncrypted: false,
+        isRead: false,
+      })
+    }
   }
 
   const handleMessageClick = (messageId: string) => {
+    if (!activeChat) return
+
+    // Find the clicked message
+    const msg = activeChat.messages.find((m) => m.id === messageId)
+
+    // Unlock the message in state
     dispatch(unlockMessage(messageId))
+
+    if (msg) {
+      const isLocked = unlockedMessageId !== messageId
+      const isUnread = !msg.isRead
+
+      // Emit message:read if:
+      //  - Message is currently locked (user clicking to reveal it), OR
+      //  - Message is already unlocked but hasn't been read yet
+      if ((isLocked || isUnread) && msg.senderId !== "me") {
+        markMessageRead(activeChat.id, messageId)
+      }
+    }
   }
 
   const handleSelectChat = (chat: any) => {
@@ -639,9 +697,12 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
               lockDisplayMode={lockDisplayMode}
               customLockText={customLockText}
               activePresence={activePresence}
+              isTyping={typingByChatId[activeChat.id] ?? false}
               messagesEndRef={messagesEndRef}
               onMessageClick={handleMessageClick}
               onSendMessage={handleSendMessage}
+              onTypingStart={() => startTyping(activeChat.id)}
+              onTypingStop={() => stopTyping(activeChat.id)}
               onBack={() => dispatch(setActiveChat(null))}
               mode={view === "requests" ? "request" : "chat"}
               onAcceptRequest={handleAcceptRequest}
@@ -656,9 +717,12 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
               lockDisplayMode={lockDisplayMode}
               customLockText={customLockText}
               activePresence={activePresence}
+              isTyping={typingByChatId[activeChat.id] ?? false}
               messagesEndRef={messagesEndRef}
               onMessageClick={handleMessageClick}
               onSendMessage={handleSendMessage}
+              onTypingStart={() => startTyping(activeChat.id)}
+              onTypingStop={() => stopTyping(activeChat.id)}
               onBack={() => dispatch(setActiveChat(null))}
               mode={view === "requests" ? "request" : "chat"}
               onAcceptRequest={handleAcceptRequest}

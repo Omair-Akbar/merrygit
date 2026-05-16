@@ -59,7 +59,7 @@ interface ChatState {
   unlockedMessageId: string | null
   isLoading: boolean
   error: string | null
-  isTyping: boolean
+  typingByChatId: Record<string, boolean>
   userPresence: Record<string, UserPresence>
   isCreatingDirectChat: boolean
   creatingDirectChatUserId: string | null
@@ -89,7 +89,7 @@ const initialState: ChatState = {
   unlockedMessageId: null,
   isLoading: false,
   error: null,
-  isTyping: false,
+  typingByChatId: {},
   userPresence: {},
   isCreatingDirectChat: false,
   creatingDirectChatUserId: null,
@@ -365,8 +365,8 @@ const chatSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
-    setTyping: (state, action: PayloadAction<boolean>) => {
-      state.isTyping = action.payload
+    setTyping: (state, action: PayloadAction<{ chatId: string; isTyping: boolean }>) => {
+      state.typingByChatId[action.payload.chatId] = action.payload.isTyping
     },
     markMessagesRead: (state, action: PayloadAction<string>) => {
       const chat = state.chats.find((c) => c.id === action.payload)
