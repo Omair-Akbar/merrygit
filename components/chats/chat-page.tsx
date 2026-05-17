@@ -12,9 +12,9 @@ import {
   fetchGroupMessagesThunk,
   respondDirectChatRequestThunk,
   sendGroupMessageThunk,
-  sendDirectMessageThunk,
   setActiveChat,
   setActiveChatId,
+  markMessagesRead,
   unlockMessage,
 } from "@/lib/store/slices/chat-slice"
 import { clearSearch, searchUserThunk, type UserProfile } from "@/lib/store/slices/user-slice"
@@ -62,7 +62,7 @@ const DEFAULT_GROUP_SETTINGS: GroupSettings = {
 
 export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   const dispatch = useAppDispatch()
-  const { isConnected, sendMessage, startTyping, stopTyping, joinChat, leaveChat, setViewingChat, setNotViewingChat, markMessageRead } = useSocket()
+  const { isConnected, sendMessage, startTyping, stopTyping, joinChat, leaveChat, setViewingChat, setNotViewingChat } = useSocket()
   const {
     chats,
     activeChat,
@@ -101,7 +101,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   // Check if current user has invitation status for a group
   const getUserInvitationStatus = (group: GroupWithDetails): "accepted" | "pending" | "declined" | null => {
     if (!currentUser) return null
-    const userId = currentUser.id || currentUser._id
+    const userId = (currentUser as any)._id ?? (currentUser as any).id
     if (!userId) return null
     const userMember = group.members.find((m) => m.user._id === userId)
     return userMember?.status || null
@@ -230,7 +230,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     if (activeChat?.id === chatIdParam) return
 
     if (chatType === "group") {
-      dispatch(setActiveChat(matchedChat))
+      dispatch(setActiveChat(matchedChat as any))
       return
     }
 
@@ -497,14 +497,11 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
       dispatch(sendGroupMessageThunk({ groupId: activeChat.id, text: content.trim() }))
       return
     }
-
-    dispatch(sendDirectMessageThunk({ chatId: activeChat.id, text: content.trim() }))
-    
     // Emit message to socket for direct chats
     if (currentUser) {
       sendMessage(activeChat.id, {
         content: content.trim(),
-        senderId: currentUser._id || currentUser.id,
+        senderId: (currentUser as any)._id ?? (currentUser as any).id,
         senderName: currentUser.name,
         senderAvatar: currentUser.avatar || "",
         receiverId: activeChat.participantId,
@@ -531,7 +528,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
       //  - Message is currently locked (user clicking to reveal it), OR
       //  - Message is already unlocked but hasn't been read yet
       if ((isLocked || isUnread) && msg.senderId !== "me") {
-        markMessageRead(activeChat.id, messageId)
+        dispatch(markMessagesRead(activeChat.id))
       }
     }
   }
@@ -612,7 +609,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
       <div className="flex-1 flex min-h-0 overflow-hidden relative">
         <ChatSidebar
-          chats={sortedChats}
+          chats={sortedChats as any}
           activeChat={activeChat}
           onSelectChat={handleSelectChat}
           isOpen={isSidebarOpen}
@@ -680,7 +677,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
             <GroupDetails group={activeChat as any} onBack={() => setShowGroupDetails(false)} />
           ) : activeChat && isActiveGroupChat && activeGroupStatus === "pending" ? (
             <PendingGroupInvitation
-              group={activeChat as GroupWithDetails}
+              group={activeChat as unknown as GroupWithDetails}
               onBack={() => dispatch(setActiveChat(null))}
               onAccept={() => {
                 setShowGroupDetails(false)
