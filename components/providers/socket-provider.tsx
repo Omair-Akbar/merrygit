@@ -33,7 +33,7 @@ interface SocketProviderProps {
 export function SocketProvider({ children }: SocketProviderProps) {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth)
   // Stable primitive — only changes on login/logout, not on every Redux update
-  const userId = user?._id ?? null
+  const userId = user?.id ?? null
   // Stable string to detect new chats without subscribing to entire chat state
   const chatIds = useAppSelector((state) => state.chat.chats.map((c) => c.id).join(","))
   const dispatch = useAppDispatch()

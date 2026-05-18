@@ -27,7 +27,6 @@ export function useSocket(options: UseSocketOptions = {}) {
   useEffect(() => {
     if (!isAuthenticated || !user) return
 
-    console.log("[useSocket] Connecting with user ID:", user._id)
     const socket = socketClient.getSocket() ?? socketClient.connect(user._id)
 
     if (socket) {
@@ -87,14 +86,6 @@ export function useSocket(options: UseSocketOptions = {}) {
         dispatch(setUserOnline({ userId: data.userId, isOnline: false }))
       }
 
-      // const handleUserViewing = (data: { userId: string; chatId: string }) => {
-      //   dispatch(setUserViewing({ userId: data.userId, isViewing: true }))
-      // }
-
-      // const handleUserNotViewing = (data: { userId: string; chatId: string }) => {
-      //   dispatch(setUserViewing({ userId: data.userId, isViewing: false }))
-      // }
-
       socket.on("connect", handleConnect)
       socket.on("disconnect", handleDisconnect)
       socket.on("connect_error", handleConnectError)
@@ -103,8 +94,6 @@ export function useSocket(options: UseSocketOptions = {}) {
       socket.on("typing:stop", handleTypingStop)
       socket.on("user:online", handleUserOnline)
       socket.on("user:offline", handleUserOffline)
-      // socket.on("user:viewing", handleUserViewing)
-      // socket.on("user:not-viewing", handleUserNotViewing)
 
       return () => {
         const s = socketClient.getSocket()
@@ -117,8 +106,6 @@ export function useSocket(options: UseSocketOptions = {}) {
           s.off("typing:stop", handleTypingStop)
           s.off("user:online", handleUserOnline)
           s.off("user:offline", handleUserOffline)
-          // s.off("user:viewing", handleUserViewing)
-          // s.off("user:not-viewing", handleUserNotViewing)
         }
       }
     }
@@ -126,7 +113,6 @@ export function useSocket(options: UseSocketOptions = {}) {
   }, [isAuthenticated, user, dispatch])
 
   const sendMessage = useCallback((chatId: string, message: Omit<Message, "id" | "timestamp">) => {
-    console.log("[Socket Sender] 📴 Sending message to chat:", chatId)
     socketClient.emit("message:send", { chatId, message })
   }, [])
 
@@ -154,10 +140,6 @@ export function useSocket(options: UseSocketOptions = {}) {
     socketClient.emit("chat:not-viewing", { chatId })
   }, [])
 
-  const markMessageRead = useCallback((chatId: string, messageId: string) => {
-    socketClient.emit("message:read", { chatId, messageId })
-  }, [])
-
   return {
     isConnected,
     sendMessage,
@@ -167,6 +149,5 @@ export function useSocket(options: UseSocketOptions = {}) {
     leaveChat,
     setViewingChat,
     setNotViewingChat,
-    markMessageRead,
   }
 }
