@@ -70,6 +70,33 @@ export function useSocket(options: UseSocketOptions = {}) {
         dispatch(addMessage({ chatId: data.chatId, message: mapped }))
       }
 
+      const handleMessageSent = (data: { chatId: string; message: unknown }) => {
+        const raw = data.message as Record<string, unknown>
+        const currentUserId = (user as any)?._id ?? (user as any)?.id ?? null
+        const formatTime = (iso: string) =>
+          new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        const formatDay = (iso: string) =>
+          new Date(iso).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })
+
+        const senderId = (raw.senderId as string) ?? ""
+        const isMe = Boolean(currentUserId && senderId === currentUserId)
+
+        const mapped: Message = {
+          id: (raw._id as string) ?? (raw.id as string) ?? "",
+          content: (raw.text as string) ?? (raw.content as string) ?? "",
+          senderId: isMe ? "me" : senderId,
+          senderName: (raw.sender as Record<string, string>)?.name ?? (raw.senderName as string),
+          senderAvatar: (raw.sender as Record<string, string>)?.avatar ?? (raw.senderAvatar as string),
+          receiverId: (raw.receiverId as string) ?? "",
+          timestamp: raw.createdAt ? formatTime(raw.createdAt as string) : (raw.timestamp as string) ?? "",
+          dayLabel: raw.createdAt ? formatDay(raw.createdAt as string) : (raw.dayLabel as string),
+          isEncrypted: (raw.isEncrypted as boolean) ?? true,
+          isRead: true,
+          attachments: (raw.attachments as string[]) ?? undefined,
+        }
+        dispatch(addMessage({ chatId: data.chatId, message: mapped }))
+      }
+
       const handleTypingStart = (data: { chatId: string; userId: string }) => {
         dispatch(setTyping({ chatId: data.chatId, isTyping: true }))
       }
@@ -90,6 +117,7 @@ export function useSocket(options: UseSocketOptions = {}) {
       socket.on("disconnect", handleDisconnect)
       socket.on("connect_error", handleConnectError)
       socket.on("message:receive", handleMessageReceive)
+      socket.on("message:sent", handleMessageSent)
       socket.on("typing:start", handleTypingStart)
       socket.on("typing:stop", handleTypingStop)
       socket.on("user:online", handleUserOnline)
@@ -102,6 +130,7 @@ export function useSocket(options: UseSocketOptions = {}) {
           s.off("disconnect", handleDisconnect)
           s.off("connect_error", handleConnectError)
           s.off("message:receive", handleMessageReceive)
+          s.off("message:sent", handleMessageSent)
           s.off("typing:start", handleTypingStart)
           s.off("typing:stop", handleTypingStop)
           s.off("user:online", handleUserOnline)
