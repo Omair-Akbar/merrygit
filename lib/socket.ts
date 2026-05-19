@@ -3,6 +3,7 @@ import { io, type Socket } from "socket.io-client"
 // Socket event types for type safety
 export interface ServerToClientEvents {
   "message:receive": (data: { chatId: string; message: unknown }) => void
+  "message:sent": (data: { chatId: string; message: unknown }) => void
   "typing:start": (data: { chatId: string; userId: string }) => void
   "typing:stop": (data: { chatId: string; userId: string }) => void
   "user:online": (data: { userId: string }) => void
@@ -14,7 +15,7 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  "message:send": (data: { chatId: string; message: unknown }) => void
+  "message:send": (data: { chatId: string; chatType?: "direct" | "group"; message: unknown }) => void
   "typing:start": (data: { chatId: string }) => void
   "typing:stop": (data: { chatId: string }) => void
   "chat:join": (data: { chatId: string }) => void
@@ -85,9 +86,9 @@ class SocketClient {
     }
   }
 
-  emit<T extends keyof ClientToServerEvents>(event: T, data: Parameters<ClientToServerEvents[T]>[0]): void {
+  emit<T extends keyof ClientToServerEvents>(event: T, ...args: Parameters<ClientToServerEvents[T]>): void {
     if (this.socket?.connected) {
-      this.socket.emit(event, data)
+      this.socket.emit(event as any, ...(args as any))
     } else {
       console.warn("[Socket] Cannot emit, not connected")
     }

@@ -107,7 +107,7 @@ function ChatInputComponent({ onSendMessage, onTypingStart, onTypingStop, disabl
     typingTimeoutRef.current = setTimeout(() => {
       isTypingRef.current = false
       onTypingStop?.()
-    }, 2000)
+    }, 1000)
   }, [onTypingStart, onTypingStop])
 
   const handleSubmit = (e: React.FormEvent) => {

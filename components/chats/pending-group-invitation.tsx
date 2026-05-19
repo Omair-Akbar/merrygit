@@ -147,7 +147,7 @@ export function PendingGroupInvitation({ group, onBack, onAccept }: PendingGroup
                           role: member.role,
                         })
                       }
-                      className="w-full rounded-lg border border-border/50 p-3 hover:bg-accent transition-colors flex items-center justify-between text-left"
+                      className="w-full rounded-lg border border-border/50 p-3 hover:bg-white/10 transition-colors flex items-center justify-between text-left"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <Avatar className="h-10 w-10">
