@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SidebarNav } from "@/components/chats/sidebar/sidebar-nav"
@@ -41,6 +41,8 @@ export function ChatSidebar({
   const isMobile = useIsMobile()
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const routeChatId = searchParams.get("id")
 
   const isDirectActive = pathname === "/chats"
   const isGroupActive = pathname === "/chats/groups"
@@ -48,6 +50,7 @@ export function ChatSidebar({
   const isFindUsersActive = pathname === "/find-users"
   const isSettingsActive = pathname === "/settings"
   const shouldShowSidebar = isOpen && (!isMobile || !activeChat)
+  const activeChatId = routeChatId || activeChat?.id || null
 
   const filteredChats = chats.filter((chat) => {
     const matchesSearch =
@@ -117,7 +120,7 @@ export function ChatSidebar({
                 <div className="flex-1 relative overflow-hidden">
                   <SidebarChatList
                     chats={filteredChats}
-                    activeChatId={activeChat?.id || null}
+                    activeChatId={activeChatId}
                     onSelectChat={handleSelectChat}
                     userPresence={userPresence}
                     view={view}
