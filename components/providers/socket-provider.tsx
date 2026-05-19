@@ -95,11 +95,11 @@ export function SocketProvider({ children }: SocketProviderProps) {
     }
 
     const handleTypingStart = (data: { chatId: string; userId: string }) => {
-      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: true }))
+      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: true, userId: data.userId }))
     }
 
     const handleTypingStop = (data: { chatId: string; userId: string }) => {
-      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: false }))
+      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: false, userId: data.userId }))
     }
 
     const handleUserOnline = (data: { userId: string }) => {

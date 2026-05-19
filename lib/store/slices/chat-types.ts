@@ -5,6 +5,8 @@ export interface Message {
   senderName?: string
   senderAvatar?: string
   receiverId: string
+  chatType?: "direct" | "group"
+  createdAt?: string
   timestamp: string
   dayLabel?: string
   isEncrypted: boolean
@@ -47,6 +49,7 @@ export interface ChatState {
   isLoading: boolean
   error: string | null
   typingByChatId: Record<string, boolean>
+  typingUsersByChatId: Record<string, string[]>
   userPresence: Record<string, UserPresence>
 
   // Direct chat creation
@@ -89,6 +92,7 @@ export const initialChatState: ChatState = {
   isLoading: false,
   error: null,
   typingByChatId: {},
+  typingUsersByChatId: {},
   userPresence: {},
 
   isCreatingDirectChat: false,
@@ -149,6 +153,7 @@ export const mapApiMessageToMessage = (
     senderName: message.sender?.name,
     senderAvatar: message.sender?.avatar || undefined,
     receiverId: "",
+    createdAt: message.createdAt,
     timestamp: formatMessageTimestamp(message.createdAt),
     dayLabel: formatMessageDayLabel(message.createdAt),
     isEncrypted: true,

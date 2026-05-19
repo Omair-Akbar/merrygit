@@ -11,7 +11,6 @@ import {
   fetchDirectMessagesThunk,
   fetchGroupMessagesThunk,
   respondDirectChatRequestThunk,
-  sendGroupMessageThunk,
   setActiveChat,
   setActiveChatId,
   markMessagesRead,
@@ -69,6 +68,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     unlockedMessageId,
     userPresence,
     typingByChatId,
+    typingUsersByChatId,
     hasLoadedDirectChats,
     isLoadingChats,
     hasLoadedDirectRequests,
@@ -493,22 +493,19 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
 
   const handleSendMessage = (content: string, _attachments?: File[]) => {
     if (!activeChat || !content.trim()) return
-    if (activeChat.isGroup) {
-      dispatch(sendGroupMessageThunk({ groupId: activeChat.id, text: content.trim() }))
-      return
-    }
-    // Emit message to socket for direct chats
-    if (currentUser) {
-      sendMessage(activeChat.id, {
-        content: content.trim(),
-        senderId: (currentUser as any)._id ?? (currentUser as any).id,
-        senderName: currentUser.name,
-        senderAvatar: currentUser.avatar || "",
-        receiverId: activeChat.participantId,
-        isEncrypted: false,
-        isRead: false,
-      })
-    }
+    if (!currentUser) return
+
+    const senderId = (currentUser as any)._id ?? (currentUser as any).id
+    sendMessage(activeChat.id, {
+      content: content.trim(),
+      senderId,
+      senderName: currentUser.name,
+      senderAvatar: currentUser.avatar || "",
+      receiverId: activeChat.isGroup ? "" : activeChat.participantId,
+      chatType: activeChat.isGroup ? "group" : "direct",
+      isEncrypted: false,
+      isRead: false,
+    })
   }
 
   const handleMessageClick = (messageId: string) => {
@@ -583,6 +580,23 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
   }
 
   const activePresence = getActiveUserPresence()
+  const typingUsers = useMemo(() => {
+    if (!activeChat?.isGroup) return []
+    const chatTypingIds = typingUsersByChatId[activeChat.id] || []
+    if (chatTypingIds.length === 0) return []
+
+    const currentUserId = (currentUser as any)?._id ?? (currentUser as any)?.id
+    const members = (activeChat as any)?.members || []
+    return members
+      .filter((member: any) =>
+        chatTypingIds.includes(member.user._id) && member.user._id !== currentUserId,
+      )
+      .map((member: any) => ({
+        id: member.user._id,
+        name: member.user.name,
+        avatar: member.user.avatar || undefined,
+      }))
+  }, [activeChat, typingUsersByChatId, currentUser])
   const isLoadingActiveMessages = Boolean(
     activeChat &&
     (activeChat.isGroup
@@ -695,6 +709,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
               customLockText={customLockText}
               activePresence={activePresence}
               isTyping={typingByChatId[activeChat.id] ?? false}
+              typingUsers={typingUsers}
               messagesEndRef={messagesEndRef}
               onMessageClick={handleMessageClick}
               onSendMessage={handleSendMessage}

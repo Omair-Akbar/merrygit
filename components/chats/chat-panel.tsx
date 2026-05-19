@@ -19,6 +19,7 @@ interface ChatPanelProps {
   customLockText: string
   activePresence: { isOnline: boolean; isViewing: boolean }
   isTyping?: boolean
+  typingUsers?: Array<{ id: string; name: string; avatar?: string }>
   messagesEndRef: RefObject<HTMLDivElement | null>
   onMessageClick: (messageId: string) => void
   onSendMessage: (content: string, attachments?: File[]) => void
@@ -39,6 +40,7 @@ export function ChatPanel({
   customLockText,
   activePresence,
   isTyping = false,
+  typingUsers = [],
   messagesEndRef,
   onMessageClick,
   onSendMessage,
@@ -222,20 +224,53 @@ export function ChatPanel({
                 transition={{ duration: 0.15 }}
                 className="flex justify-start"
               >
-                <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm px-4 py-3 bg-gray-800/5 dark:bg-white/5 border border-purple-400/20">
-                  {[0, 1, 2].map((i) => (
-                    <motion.span
-                      key={i}
-                      className="block h-2 w-2 rounded-full bg-muted-foreground/60"
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{
-                        duration: 0.6,
-                        repeat: Infinity,
-                        delay: i * 0.15,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  ))}
+                <div className="flex items-center gap-3 rounded-2xl rounded-bl-sm px-4 py-3 bg-gray-800/5 dark:bg-white/5 border border-purple-400/20">
+                  {chat.isGroup ? (
+                    typingUsers.length > 0 ? (
+                      <div className="flex items-center -space-x-2">
+                        {typingUsers.slice(0, 3).map((user) => (
+                          <Avatar key={user.id} className="h-6 w-6 border border-background">
+                            {user.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
+                            <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
+                              {user.name
+                                .split(" ")
+                                .map((part) => part[0])
+                                .join("")
+                                .slice(0, 2)}
+                            </AvatarFallback>
+                          </Avatar>
+                        ))}
+                      </div>
+                    ) : null
+                  ) : (
+                    <Avatar className="h-6 w-6 border border-background">
+                      {chat.participantAvatar ? (
+                        <AvatarImage src={chat.participantAvatar} alt={chat.participantName} />
+                      ) : null}
+                      <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
+                        {chat.participantName
+                          .split(" ")
+                          .map((part) => part[0])
+                          .join("")
+                          .slice(0, 2)}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div className="flex items-center gap-1">
+                    {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="block h-2 w-2 rounded-full bg-muted-foreground/60"
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{
+                          duration: 0.6,
+                          repeat: Infinity,
+                          delay: i * 0.15,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             ) : null}

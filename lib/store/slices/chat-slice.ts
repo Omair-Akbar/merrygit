@@ -50,14 +50,28 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<{ chatId: string; message: import("./chat-types").Message }>,
     ) => {
+      const { chatId, message } = action.payload
       const chat = state.chats.find((c) => c.id === action.payload.chatId)
       if (chat) {
-        chat.messages.push(action.payload.message)
-        chat.lastMessage = action.payload.message
+        chat.messages.push(message)
+        chat.lastMessage = message
       }
-      if (state.activeChat?.id === action.payload.chatId) {
-        state.activeChat.messages.push(action.payload.message)
-        state.activeChat.lastMessage = action.payload.message
+      if (state.activeChat?.id === chatId) {
+        state.activeChat.messages.push(message)
+        state.activeChat.lastMessage = message
+      }
+
+      const shouldUpdateGroupMessages =
+        Boolean(state.groupMessagesByChatId[chatId]) ||
+        Boolean(state.activeChat?.id === chatId && state.activeChat.isGroup)
+
+      if (shouldUpdateGroupMessages) {
+        state.groupMessagesByChatId[chatId] = [
+          ...(state.groupMessagesByChatId[chatId] || []),
+          message,
+        ]
+        state.groupLastMessageAtByChatId[chatId] =
+          message.createdAt || state.groupLastMessageAtByChatId[chatId] || new Date().toISOString()
       }
     },
 
@@ -73,8 +87,25 @@ const chatSlice = createSlice({
       state.error = action.payload
     },
 
-    setTyping: (state, action: PayloadAction<{ chatId: string; isTyping: boolean }>) => {
-      state.typingByChatId[action.payload.chatId] = action.payload.isTyping
+    setTyping: (
+      state,
+      action: PayloadAction<{ chatId: string; isTyping: boolean; userId?: string }>,
+    ) => {
+      const { chatId, isTyping, userId } = action.payload
+      if (!userId) {
+        state.typingByChatId[chatId] = isTyping
+        return
+      }
+
+      const existing = state.typingUsersByChatId[chatId] || []
+      const updated = isTyping
+        ? existing.includes(userId)
+          ? existing
+          : [...existing, userId]
+        : existing.filter((id) => id !== userId)
+
+      state.typingUsersByChatId[chatId] = updated
+      state.typingByChatId[chatId] = updated.length > 0
     },
 
     markMessagesRead: (state, action: PayloadAction<string>) => {

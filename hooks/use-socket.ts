@@ -61,6 +61,7 @@ export function useSocket(options: UseSocketOptions = {}) {
           senderName: (raw.sender as Record<string, string>)?.name ?? (raw.senderName as string),
           senderAvatar: (raw.sender as Record<string, string>)?.avatar ?? (raw.senderAvatar as string),
           receiverId: (raw.receiverId as string) ?? "",
+          createdAt: (raw.createdAt as string) ?? undefined,
           timestamp: raw.createdAt ? formatTime(raw.createdAt as string) : (raw.timestamp as string) ?? "",
           dayLabel: raw.createdAt ? formatDay(raw.createdAt as string) : (raw.dayLabel as string),
           isEncrypted: (raw.isEncrypted as boolean) ?? true,
@@ -88,6 +89,7 @@ export function useSocket(options: UseSocketOptions = {}) {
           senderName: (raw.sender as Record<string, string>)?.name ?? (raw.senderName as string),
           senderAvatar: (raw.sender as Record<string, string>)?.avatar ?? (raw.senderAvatar as string),
           receiverId: (raw.receiverId as string) ?? "",
+          createdAt: (raw.createdAt as string) ?? undefined,
           timestamp: raw.createdAt ? formatTime(raw.createdAt as string) : (raw.timestamp as string) ?? "",
           dayLabel: raw.createdAt ? formatDay(raw.createdAt as string) : (raw.dayLabel as string),
           isEncrypted: (raw.isEncrypted as boolean) ?? true,
@@ -98,11 +100,11 @@ export function useSocket(options: UseSocketOptions = {}) {
       }
 
       const handleTypingStart = (data: { chatId: string; userId: string }) => {
-        dispatch(setTyping({ chatId: data.chatId, isTyping: true }))
+        dispatch(setTyping({ chatId: data.chatId, isTyping: true, userId: data.userId }))
       }
 
       const handleTypingStop = (data: { chatId: string; userId: string }) => {
-        dispatch(setTyping({ chatId: data.chatId, isTyping: false }))
+        dispatch(setTyping({ chatId: data.chatId, isTyping: false, userId: data.userId }))
       }
 
       const handleUserOnline = (data: { userId: string }) => {
