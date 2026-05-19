@@ -224,12 +224,12 @@ export function ChatPanel({
                 transition={{ duration: 0.15 }}
                 className="flex justify-start"
               >
-                <div className="flex items-center gap-3 rounded-2xl rounded-bl-sm px-4 py-3 bg-gray-800/5 dark:bg-white/5 border border-purple-400/20">
+                <div className="flex items-center gap-3 rounded-2xl rounded-bl-sm py-3">
                   {chat.isGroup ? (
                     typingUsers.length > 0 ? (
                       <div className="flex items-center -space-x-2">
                         {typingUsers.slice(0, 3).map((user) => (
-                          <Avatar key={user.id} className="h-6 w-6 border border-background">
+                          <Avatar key={user.id} className="h-8 w-8 border border-background">
                             {user.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
                             <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
                               {user.name
