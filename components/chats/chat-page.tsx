@@ -738,7 +738,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
               onSendMessage={handleSendMessage}
               onTypingStart={() => startTyping(activeChat.id)}
               onTypingStop={() => stopTyping(activeChat.id)}
-              onBack={() => dispatch(setActiveChat(null))}
+              onBack={() => { router.push("/chats"); }}
               mode={view === "requests" ? "request" : "chat"}
               onAcceptRequest={handleAcceptRequest}
               onRejectRequest={handleRejectRequest}
@@ -758,7 +758,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
               onSendMessage={handleSendMessage}
               onTypingStart={() => startTyping(activeChat.id)}
               onTypingStop={() => stopTyping(activeChat.id)}
-              onBack={() => dispatch(setActiveChat(null))}
+              onBack={() => { router.push("/chats"); }}
               mode={view === "requests" ? "request" : "chat"}
               onAcceptRequest={handleAcceptRequest}
               onRejectRequest={handleRejectRequest}
