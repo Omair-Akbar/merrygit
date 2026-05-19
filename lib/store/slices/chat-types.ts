@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-// chat-types.ts
-// Shared types, interfaces, initial state, and utility helpers
-// used by both direct-chat-slice and group-chat-slice.
-// ─────────────────────────────────────────────────────────────
-
 export interface Message {
   id: string
   content: string

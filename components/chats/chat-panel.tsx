@@ -1,7 +1,7 @@
 "use client"
 
 import type { RefObject } from "react"
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Lock, Loader2 } from "lucide-react"
@@ -10,8 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserStatusIndicator } from "@/components/chats/user-status-indicator"
 import { ChatInput } from "@/components/chats/chat-input"
 import { ChatMessage } from "@/components/chats/chat-message"
-import { Skeleton } from "@/components/ui/skeleton"
-import { UserDetailsModal } from "@/components/ui/user-details-modal"
 import type { Chat } from "@/lib/store/slices/chat-slice"
 
 interface ChatPanelProps {
@@ -54,7 +52,6 @@ export function ChatPanel({
   onRejectRequest,
 }: ChatPanelProps) {
   const isRequestMode = mode === "request"
-  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   let lastDayLabel: string | null = null
 
   const emailValue = chat.participantEmail || "Not available"
@@ -98,11 +95,7 @@ export function ChatPanel({
           </button>
         ) : (
           <div className="flex items-center gap-3 flex-1">
-            <button
-              type="button"
-              onClick={() => setIsUserModalOpen(true)}
-              className="relative hover:opacity-80 transition-opacity"
-            >
+            <Link href={`/user/${chat.participantUsername}`} className="relative hover:opacity-80 transition-opacity">
               <Avatar className="h-10 w-10">
                 {chat.participantAvatar ? (
                   <AvatarImage src={chat.participantAvatar} alt={chat.participantName} />
@@ -114,7 +107,7 @@ export function ChatPanel({
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-            </button>
+            </Link>
             <div>
               <div className="flex items-center gap-2">
                 <Link href={`/user/${chat.participantUsername}`} className="font-medium hover:underline">
@@ -165,89 +158,91 @@ export function ChatPanel({
           </div>
         </div>
       ) : (
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {isLoadingMessages && chat.messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground animate-pulse">Loading messages...</p>
-          </div>
-        ) : (
-          <AnimatePresence mode="popLayout">
-              {chat.messages.map((msg, index) => {
-                const dayLabel = msg.dayLabel || null
-                const isNewDay = dayLabel && dayLabel !== lastDayLabel
-                if (isNewDay) {
-                  lastDayLabel = dayLabel
-                }
-
-                const previousMessage = chat.messages[index - 1]
-                const isNewSender =
-                  !previousMessage ||
-                  previousMessage.senderId !== msg.senderId ||
-                  (previousMessage.dayLabel || null) !== dayLabel
-
-                const shouldShowGroupMeta = Boolean(chat.isGroup && isNewSender)
-                const senderName = msg.senderName || (msg.senderId === "me" ? "You" : "Unknown")
-
-                return (
-                  <Fragment key={msg.id}>
-                    {isNewDay && (
-                      <div className="flex items-center gap-3 py-2">
-                        <div className="h-px flex-1 bg-border" />
-                        <span className="text-xs text-muted-foreground font-medium">{dayLabel}</span>
-                        <div className="h-px flex-1 bg-border" />
-                      </div>
-                    )}
-                    <ChatMessage
-                      message={msg}
-                      isUnlocked={unlockedMessageId === msg.id}
-                      lockDisplayMode={lockDisplayMode}
-                      customLockText={customLockText}
-                      onMessageClick={onMessageClick}
-                      showSenderMeta={shouldShowGroupMeta}
-                      senderName={shouldShowGroupMeta ? senderName : undefined}
-                      senderAvatar={shouldShowGroupMeta ? msg.senderAvatar : undefined}
-                      reserveAvatarSpace={chat.isGroup}
-                    />
-                  </Fragment>
-                )
-              })}
-            </AnimatePresence>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      )}
-
-      {/* Typing indicator — fixed strip above the input, never scrolls */}
-      {!isRequestMode && (
-        <AnimatePresence>
-          {isTyping && (
-            <motion.div
-              key="typing-indicator"
-              initial={{ opacity: 0, y: 6, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-              className="px-4 py-2 flex justify-start"
-            >
-              <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm px-4 py-3 bg-gray-800/5 dark:bg-white/5 border border-purple-400/20">
-                {[0, 1, 2].map((i) => (
-                  <motion.span
-                    key={i}
-                    className="block h-2 w-2 rounded-full bg-muted-foreground/60"
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{
-                      duration: 0.6,
-                      repeat: Infinity,
-                      delay: i * 0.15,
-                      ease: "easeInOut",
-                    }}
-                  />
-                ))}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="min-h-full flex flex-col justify-end gap-3">
+            {isLoadingMessages && chat.messages.length === 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center space-y-4">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground animate-pulse">Loading messages...</p>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            ) : chat.messages.length === 0 ? (
+              <div className="flex flex-1 items-center justify-center">
+                <p className="text-sm text-muted-foreground text-center">Say hi or start a conversation.</p>
+              </div>
+            ) : (
+              <AnimatePresence mode="popLayout">
+                {chat.messages.map((msg, index) => {
+                  const dayLabel = msg.dayLabel || null
+                  const isNewDay = dayLabel && dayLabel !== lastDayLabel
+                  if (isNewDay) {
+                    lastDayLabel = dayLabel
+                  }
+
+                  const previousMessage = chat.messages[index - 1]
+                  const isNewSender =
+                    !previousMessage ||
+                    previousMessage.senderId !== msg.senderId ||
+                    (previousMessage.dayLabel || null) !== dayLabel
+
+                  const shouldShowGroupMeta = Boolean(chat.isGroup && isNewSender)
+                  const senderName = msg.senderName || (msg.senderId === "me" ? "You" : "Unknown")
+
+                  return (
+                    <Fragment key={msg.id}>
+                      {isNewDay && (
+                        <div className="flex items-center gap-3 py-2">
+                          <div className="h-px flex-1 bg-border" />
+                          <span className="text-xs text-muted-foreground font-medium">{dayLabel}</span>
+                          <div className="h-px flex-1 bg-border" />
+                        </div>
+                      )}
+                      <ChatMessage
+                        message={msg}
+                        isUnlocked={unlockedMessageId === msg.id}
+                        lockDisplayMode={lockDisplayMode}
+                        customLockText={customLockText}
+                        onMessageClick={onMessageClick}
+                        showSenderMeta={shouldShowGroupMeta}
+                        senderName={shouldShowGroupMeta ? senderName : undefined}
+                        senderAvatar={shouldShowGroupMeta ? msg.senderAvatar : undefined}
+                        reserveAvatarSpace={chat.isGroup}
+                      />
+                    </Fragment>
+                  )
+                })}
+              </AnimatePresence>
+            )}
+
+            {!isRequestMode && isTyping ? (
+              <motion.div
+                key="typing-indicator"
+                initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="flex justify-start"
+              >
+                <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm px-4 py-3 bg-gray-800/5 dark:bg-white/5 border border-purple-400/20">
+                  {[0, 1, 2].map((i) => (
+                    <motion.span
+                      key={i}
+                      className="block h-2 w-2 rounded-full bg-muted-foreground/60"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{
+                        duration: 0.6,
+                        repeat: Infinity,
+                        delay: i * 0.15,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            ) : null}
+
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
       )}
 
       {isRequestMode ? (
@@ -270,18 +265,6 @@ export function ChatPanel({
       ) : (
         <ChatInput onSendMessage={onSendMessage} onTypingStart={onTypingStart} onTypingStop={onTypingStop} />
       )}
-
-      <UserDetailsModal
-        open={isUserModalOpen}
-        user={{
-          name: chat.participantName,
-          username: chat.participantUsername,
-          email: chat.participantEmail,
-          avatar: chat.participantAvatar,
-          timezone: chat.participantTimezone,
-        }}
-        onOpenChange={setIsUserModalOpen}
-      />
     </>
   )
 }

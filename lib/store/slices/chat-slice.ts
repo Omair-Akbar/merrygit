@@ -1,10 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-// chat-slice.ts  (entry point — drop-in replacement)
-//
-// Composes direct-chat-slice and group-chat-slice into a single
-// Redux slice so all existing imports keep working unchanged.
-// ─────────────────────────────────────────────────────────────
-
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
 // Types & shared state
