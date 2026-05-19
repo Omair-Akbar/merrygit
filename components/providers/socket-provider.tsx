@@ -33,7 +33,7 @@ interface SocketProviderProps {
 export function SocketProvider({ children }: SocketProviderProps) {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth)
   // Stable primitive — only changes on login/logout, not on every Redux update
-  const userId = user?._id ?? null
+  const userId = user?.id ?? null
   // Stable string to detect new chats without subscribing to entire chat state
   const chatIds = useAppSelector((state) => state.chat.chats.map((c) => c.id).join(","))
   const dispatch = useAppDispatch()
@@ -84,6 +84,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
         senderName: (raw.sender as Record<string, string>)?.name ?? (raw.senderName as string),
         senderAvatar: (raw.sender as Record<string, string>)?.avatar ?? (raw.senderAvatar as string),
         receiverId: (raw.receiverId as string) ?? "",
+        chatType: (raw.chatType as "direct" | "group") ?? undefined,
         timestamp: raw.createdAt ? fmt(raw.createdAt as string) : (raw.timestamp as string) ?? "",
         dayLabel: raw.createdAt ? day(raw.createdAt as string) : (raw.dayLabel as string),
         isEncrypted: (raw.isEncrypted as boolean) ?? true,
@@ -95,11 +96,11 @@ export function SocketProvider({ children }: SocketProviderProps) {
     }
 
     const handleTypingStart = (data: { chatId: string; userId: string }) => {
-      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: true }))
+      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: true, userId: data.userId }))
     }
 
     const handleTypingStop = (data: { chatId: string; userId: string }) => {
-      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: false }))
+      dispatchRef.current(setTyping({ chatId: data.chatId, isTyping: false, userId: data.userId }))
     }
 
     const handleUserOnline = (data: { userId: string }) => {
