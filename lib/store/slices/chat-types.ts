@@ -50,6 +50,7 @@ export interface ChatState {
   error: string | null
   typingByChatId: Record<string, boolean>
   typingUsersByChatId: Record<string, string[]>
+  groupUnreadByChatId: Record<string, number>
   userPresence: Record<string, UserPresence>
 
   // Direct chat creation
@@ -93,6 +94,7 @@ export const initialChatState: ChatState = {
   error: null,
   typingByChatId: {},
   typingUsersByChatId: {},
+  groupUnreadByChatId: {},
   userPresence: {},
 
   isCreatingDirectChat: false,

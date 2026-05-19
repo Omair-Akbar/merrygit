@@ -225,37 +225,22 @@ export function ChatPanel({
                 className="flex justify-start"
               >
                 <div className="flex items-center gap-3 rounded-2xl rounded-bl-sm py-3">
-                  {chat.isGroup ? (
-                    typingUsers.length > 0 ? (
-                      <div className="flex items-center -space-x-2">
-                        {typingUsers.slice(0, 3).map((user) => (
-                          <Avatar key={user.id} className="h-8 w-8 border border-background">
-                            {user.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
-                            <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
-                              {user.name
-                                .split(" ")
-                                .map((part) => part[0])
-                                .join("")
-                                .slice(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                        ))}
-                      </div>
-                    ) : null
-                  ) : (
-                    <Avatar className="h-6 w-6 border border-background">
-                      {chat.participantAvatar ? (
-                        <AvatarImage src={chat.participantAvatar} alt={chat.participantName} />
-                      ) : null}
-                      <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
-                        {chat.participantName
-                          .split(" ")
-                          .map((part) => part[0])
-                          .join("")
-                          .slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
+                  {chat.isGroup && typingUsers.length > 0 ? (
+                    <div className="flex items-center -space-x-2">
+                      {typingUsers.slice(0, 3).map((user) => (
+                        <Avatar key={user.id} className="h-6 w-6 border border-background">
+                          {user.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
+                          <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px]">
+                            {user.name
+                              .split(" ")
+                              .map((part) => part[0])
+                              .join("")
+                              .slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                      ))}
+                    </div>
+                  ) : null}
                   <div className="flex items-center gap-1">
                     {[0, 1, 2].map((i) => (
                       <motion.span

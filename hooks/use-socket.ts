@@ -61,6 +61,7 @@ export function useSocket(options: UseSocketOptions = {}) {
           senderName: (raw.sender as Record<string, string>)?.name ?? (raw.senderName as string),
           senderAvatar: (raw.sender as Record<string, string>)?.avatar ?? (raw.senderAvatar as string),
           receiverId: (raw.receiverId as string) ?? "",
+          chatType: (raw.chatType as "direct" | "group") ?? undefined,
           createdAt: (raw.createdAt as string) ?? undefined,
           timestamp: raw.createdAt ? formatTime(raw.createdAt as string) : (raw.timestamp as string) ?? "",
           dayLabel: raw.createdAt ? formatDay(raw.createdAt as string) : (raw.dayLabel as string),
@@ -89,6 +90,7 @@ export function useSocket(options: UseSocketOptions = {}) {
           senderName: (raw.sender as Record<string, string>)?.name ?? (raw.senderName as string),
           senderAvatar: (raw.sender as Record<string, string>)?.avatar ?? (raw.senderAvatar as string),
           receiverId: (raw.receiverId as string) ?? "",
+          chatType: (raw.chatType as "direct" | "group") ?? undefined,
           createdAt: (raw.createdAt as string) ?? undefined,
           timestamp: raw.createdAt ? formatTime(raw.createdAt as string) : (raw.timestamp as string) ?? "",
           dayLabel: raw.createdAt ? formatDay(raw.createdAt as string) : (raw.dayLabel as string),
@@ -144,7 +146,7 @@ export function useSocket(options: UseSocketOptions = {}) {
   }, [isAuthenticated, user, dispatch])
 
   const sendMessage = useCallback((chatId: string, message: Omit<Message, "id" | "timestamp">) => {
-    socketClient.emit("message:send", { chatId, message })
+    socketClient.emit("message:send", { chatId, chatType: message.chatType, message })
   }, [])
 
   const startTyping = useCallback((chatId: string) => {

@@ -84,6 +84,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
         senderName: (raw.sender as Record<string, string>)?.name ?? (raw.senderName as string),
         senderAvatar: (raw.sender as Record<string, string>)?.avatar ?? (raw.senderAvatar as string),
         receiverId: (raw.receiverId as string) ?? "",
+        chatType: (raw.chatType as "direct" | "group") ?? undefined,
         timestamp: raw.createdAt ? fmt(raw.createdAt as string) : (raw.timestamp as string) ?? "",
         dayLabel: raw.createdAt ? day(raw.createdAt as string) : (raw.dayLabel as string),
         isEncrypted: (raw.isEncrypted as boolean) ?? true,

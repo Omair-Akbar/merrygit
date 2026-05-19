@@ -15,6 +15,7 @@ import {
   setActiveChatId,
   markMessagesRead,
   unlockMessage,
+  clearChatUnread,
 } from "@/lib/store/slices/chat-slice"
 import { clearSearch, searchUserThunk, type UserProfile } from "@/lib/store/slices/user-slice"
 import {
@@ -69,6 +70,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     userPresence,
     typingByChatId,
     typingUsersByChatId,
+    groupUnreadByChatId,
     hasLoadedDirectChats,
     isLoadingChats,
     hasLoadedDirectRequests,
@@ -173,6 +175,27 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [activeChat?.messages])
 
+
+  useEffect(() => {
+    if (!activeChat?.id || view !== "messages") return
+
+    const isGroup = Boolean(activeChat.isGroup)
+    const isLoaded = isGroup
+      ? Boolean(loadedGroupMessagesByChatId[activeChat.id])
+      : Boolean(loadedMessagesByChatId[activeChat.id])
+
+    if (isLoaded) {
+      dispatch(clearChatUnread(activeChat.id))
+    }
+  }, [
+    activeChat?.id,
+    activeChat?.isGroup,
+    view,
+    loadedMessagesByChatId,
+    loadedGroupMessagesByChatId,
+    dispatch,
+  ])
+
   // Convert groups from API to chat format
   const groupChats = useMemo(() => {
     return groups.map((group: GroupWithDetails) => {
@@ -183,7 +206,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
         participantName: group.name,
         participantUsername: group.memberCount === 1 ? "1 member" : `${group.memberCount} members`,
         participantAvatar: group.avatar || undefined,
-        unreadCount: group.unread ? 1 : 0,
+        unreadCount: groupUnreadByChatId[group._id] ?? (group.unread ? 1 : 0),
         isOnline: false,
         isViewing: false,
         isGroup: true,
@@ -203,7 +226,7 @@ export function ChatPage({ view, chatType = "direct" }: ChatPageProps) {
         memberCount: group.memberCount,
       }
     })
-  }, [groups, groupMessagesByChatId, groupLastMessageAtByChatId, currentUser])
+  }, [groups, groupMessagesByChatId, groupLastMessageAtByChatId, groupUnreadByChatId, currentUser])
   const groupChatsCount = groupChats.length
 
   const activeGroupStatus = useMemo(() => {
