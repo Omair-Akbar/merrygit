@@ -1,10 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-// chat-slice.ts  (entry point — drop-in replacement)
-//
-// Composes direct-chat-slice and group-chat-slice into a single
-// Redux slice so all existing imports keep working unchanged.
-// ─────────────────────────────────────────────────────────────
-
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
 // Types & shared state
@@ -57,14 +50,49 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<{ chatId: string; message: import("./chat-types").Message }>,
     ) => {
+      const { chatId, message } = action.payload
+      const nextLastMessageAt = message.createdAt || new Date().toISOString()
+      const isIncoming = message.senderId !== "me"
+      const isActiveChat = state.activeChat?.id === chatId
+
       const chat = state.chats.find((c) => c.id === action.payload.chatId)
       if (chat) {
-        chat.messages.push(action.payload.message)
-        chat.lastMessage = action.payload.message
+        chat.messages.push(message)
+        chat.lastMessage = message
+        chat.lastMessageAt = nextLastMessageAt
+        if (isIncoming && !isActiveChat) {
+          chat.unreadCount = (chat.unreadCount || 0) + 1
+        } else if (isActiveChat) {
+          chat.unreadCount = 0
+        }
       }
-      if (state.activeChat?.id === action.payload.chatId) {
-        state.activeChat.messages.push(action.payload.message)
-        state.activeChat.lastMessage = action.payload.message
+      if (state.activeChat?.id === chatId) {
+        state.activeChat.messages.push(message)
+        state.activeChat.lastMessage = message
+        state.activeChat.lastMessageAt = nextLastMessageAt
+        if (isActiveChat) {
+          state.activeChat.unreadCount = 0
+        }
+      }
+
+      if (message.chatType === "group") {
+        const shouldUpdateGroupMessages =
+          Boolean(state.groupMessagesByChatId[chatId]) ||
+          Boolean(state.activeChat?.id === chatId && state.activeChat.isGroup)
+
+        if (shouldUpdateGroupMessages) {
+          state.groupMessagesByChatId[chatId] = [
+            ...(state.groupMessagesByChatId[chatId] || []),
+            message,
+          ]
+        }
+
+        state.groupLastMessageAtByChatId[chatId] = nextLastMessageAt
+        if (isIncoming && !isActiveChat) {
+          state.groupUnreadByChatId[chatId] = (state.groupUnreadByChatId[chatId] || 0) + 1
+        } else if (isActiveChat) {
+          state.groupUnreadByChatId[chatId] = 0
+        }
       }
     },
 
@@ -80,8 +108,25 @@ const chatSlice = createSlice({
       state.error = action.payload
     },
 
-    setTyping: (state, action: PayloadAction<{ chatId: string; isTyping: boolean }>) => {
-      state.typingByChatId[action.payload.chatId] = action.payload.isTyping
+    setTyping: (
+      state,
+      action: PayloadAction<{ chatId: string; isTyping: boolean; userId?: string }>,
+    ) => {
+      const { chatId, isTyping, userId } = action.payload
+      if (!userId) {
+        state.typingByChatId[chatId] = isTyping
+        return
+      }
+
+      const existing = state.typingUsersByChatId[chatId] || []
+      const updated = isTyping
+        ? existing.includes(userId)
+          ? existing
+          : [...existing, userId]
+        : existing.filter((id) => id !== userId)
+
+      state.typingUsersByChatId[chatId] = updated
+      state.typingByChatId[chatId] = updated.length > 0
     },
 
     markMessagesRead: (state, action: PayloadAction<string>) => {
@@ -142,6 +187,18 @@ const chatSlice = createSlice({
       state.createChatError = null
       state.lastCreatedChatId = null
     },
+
+    clearChatUnread: (state, action: PayloadAction<string>) => {
+      const chatId = action.payload
+      const chat = state.chats.find((item) => item.id === chatId)
+      if (chat) {
+        chat.unreadCount = 0
+      }
+      if (state.activeChat?.id === chatId) {
+        state.activeChat.unreadCount = 0
+      }
+      state.groupUnreadByChatId[chatId] = 0
+    },
   },
 
   // ── Async reducers — delegated to domain slices ───────────
@@ -167,6 +224,7 @@ export const {
   acceptChatRequest,
   rejectChatRequest,
   clearCreateChatState,
+  clearChatUnread,
 } = chatSlice.actions
 
 export default chatSlice.reducer

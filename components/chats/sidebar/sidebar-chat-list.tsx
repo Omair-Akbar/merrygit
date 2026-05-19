@@ -82,6 +82,9 @@ export function SidebarChatList({
                     .join("")}
                 </AvatarFallback>
               </Avatar>
+              {chat.unreadCount > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-foreground ring-2 ring-background" />
+              ) : null}
             </div>
 
             <div className="flex-1 min-w-0">
@@ -112,11 +115,6 @@ export function SidebarChatList({
                 ) : null}
               </div>
             </div>
-            {chat.unreadCount > 0 && (
-              <span className="h-5 min-w-5 px-1.5 rounded-full bg-foreground text-background text-xs flex items-center justify-center">
-                {chat.unreadCount}
-              </span>
-            )}
           </motion.button>
         )
       })}

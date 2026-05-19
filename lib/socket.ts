@@ -15,7 +15,7 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  "message:send": (data: { chatId: string; message: unknown }) => void
+  "message:send": (data: { chatId: string; chatType?: "direct" | "group"; message: unknown }) => void
   "typing:start": (data: { chatId: string }) => void
   "typing:stop": (data: { chatId: string }) => void
   "chat:join": (data: { chatId: string }) => void

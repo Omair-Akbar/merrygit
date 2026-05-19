@@ -247,6 +247,12 @@ export const addDirectChatReducers = (builder: ActionReducerMapBuilder<ChatState
 
       const mappedDirectChats = action.payload.map((chat) => {
         const existing = existingById.get(chat.chatId)
+        const unreadCount =
+          typeof (chat as any).unreadCount === "number"
+            ? (chat as any).unreadCount
+            : (chat as any).unread
+              ? 1
+              : 0
         return {
           id: chat.chatId,
           participantId: chat.otherUser._id,
@@ -254,7 +260,7 @@ export const addDirectChatReducers = (builder: ActionReducerMapBuilder<ChatState
           participantUsername: chat.otherUser.username,
           participantAvatar: chat.otherUser.avatar || undefined,
           participantEmail: existing?.participantEmail || chat.otherUser.email,
-          unreadCount: chat.unreadCount,
+          unreadCount,
           isOnline: existing?.isOnline ?? false,
           isViewing: existing?.isViewing ?? false,
           isGroup: false,

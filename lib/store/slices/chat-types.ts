@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-// chat-types.ts
-// Shared types, interfaces, initial state, and utility helpers
-// used by both direct-chat-slice and group-chat-slice.
-// ─────────────────────────────────────────────────────────────
-
 export interface Message {
   id: string
   content: string
@@ -11,6 +5,8 @@ export interface Message {
   senderName?: string
   senderAvatar?: string
   receiverId: string
+  chatType?: "direct" | "group"
+  createdAt?: string
   timestamp: string
   dayLabel?: string
   isEncrypted: boolean
@@ -53,6 +49,8 @@ export interface ChatState {
   isLoading: boolean
   error: string | null
   typingByChatId: Record<string, boolean>
+  typingUsersByChatId: Record<string, string[]>
+  groupUnreadByChatId: Record<string, number>
   userPresence: Record<string, UserPresence>
 
   // Direct chat creation
@@ -95,6 +93,8 @@ export const initialChatState: ChatState = {
   isLoading: false,
   error: null,
   typingByChatId: {},
+  typingUsersByChatId: {},
+  groupUnreadByChatId: {},
   userPresence: {},
 
   isCreatingDirectChat: false,
@@ -155,6 +155,7 @@ export const mapApiMessageToMessage = (
     senderName: message.sender?.name,
     senderAvatar: message.sender?.avatar || undefined,
     receiverId: "",
+    createdAt: message.createdAt,
     timestamp: formatMessageTimestamp(message.createdAt),
     dayLabel: formatMessageDayLabel(message.createdAt),
     isEncrypted: true,
